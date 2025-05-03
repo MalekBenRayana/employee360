@@ -1,0 +1,154 @@
+/* src/assets/styles/formula-manager.css */
+
+/* Styles pour le conteneur principal de la page */
+.formula-manager-container {
+    padding: 20px;
+}
+
+/* Styles pour le titre principal */
+.formula-manager-title {
+    color: #007bff; /* Couleur bleue Bootstrap */
+    margin-bottom: 20px;
+}
+
+/* Styles pour le bouton d'ajout de formule */
+.add-formula-button {
+    margin-bottom: 20px;
+}
+
+/* Styles pour la carte contenant la liste des formules */
+.formula-list-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour le corps de la carte de la liste des formules */
+.formula-list-body {
+    padding: 1.5rem;
+}
+
+/* Styles pour le tableau des formules */
+.formula-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.formula-table th,
+.formula-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.formula-table th {
+    font-weight: bold;
+}
+
+.formula-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Styles pour les boutons d'action (éditer, supprimer) */
+.action-buttons button {
+    margin-right: 0.5rem;
+}
+
+.edit-button {
+    color: #28a745; /* Couleur verte Bootstrap */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.delete-button {
+    color: #dc3545; /* Couleur rouge Bootstrap */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    opacity: 0.8;
+}
+
+/* Styles pour la carte contenant le formulaire de création/édition */
+.formula-form-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+}
+
+/* Styles pour le corps de la carte du formulaire */
+.formula-form-body {
+    padding: 1.5rem;
+}
+
+/* Styles pour les labels du formulaire */
+.form-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Styles pour les champs de saisie du formulaire */
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour le bouton de soumission du formulaire */
+.submit-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles pour le message d'alerte en cas d'erreur ou de succès */
+.alert {
+    margin-top: 1rem;
+}
+
+/* Styles spécifiques pour le conteneur principal dans le layout */
+.main-content .formula-manager-container {
+    padding: 30px;
+}
+
+.main-content .formula-manager-title {
+    margin-top: 0;
+}
+
+.main-content .add-formula-button {
+    margin-top: 1rem;
+}

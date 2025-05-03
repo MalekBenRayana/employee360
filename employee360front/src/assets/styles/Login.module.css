@@ -1,0 +1,125 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f8fa; /* Gris très clair, presque blanc */
+}
+
+.card {
+    width: 420px; /* Légèrement plus large */
+    border-radius: 16px; /* Bords plus arrondis pour un look moderne */
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06); /* Ombre plus douce et plus étendue */
+    border: none;
+    background-color: white;
+    overflow: hidden;
+}
+
+.cardBody {
+    padding: 48px; /* Plus d'espace intérieur */
+    display: flex;
+    flex-direction: column;
+    gap: 32px; /* Espacement plus important entre les éléments */
+}
+
+.heading {
+    text-align: center;
+    color: #374151; /* Gris anthracite */
+    font-weight: 600; /* Légèrement moins gras que 700 */
+    font-size: 2.2rem; /* Taille de police un peu plus grande */
+    margin-bottom: 0;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-weight: 500;
+    color: #4b5563; /* Gris moyen */
+    margin-bottom: 10px;
+    display: block;
+    font-size: 1rem;
+}
+
+.input {
+    border-radius: 10px;
+    border: 1px solid #d1d5db; /* Gris clair pour la bordure */
+    padding: 14px 18px; /* Padding plus généreux */
+    font-size: 1rem;
+    color: #374151;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #2563eb; /* Bleu plus vif au focus */
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25); /* Ombre bleue au focus */
+}
+
+.button {
+    background-color: #2563eb; /* Bleu primaire plus moderne */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 16px 24px; /* Padding plus important */
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); /* Ombre légère par défaut */
+}
+
+.button:hover {
+    background-color: #1e40af; /* Bleu plus foncé au survol */
+    transform: translateY(-1px); /* Légère élévation au survol */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08); /* Ombre plus prononcée au survol */
+}
+
+.button:active {
+    transform: translateY(0); /* Supprime l'élévation lors du clic */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); /* Réduit l'ombre lors du clic */
+}
+
+.error {
+    color: #dc2626; /* Rouge plus vif pour l'erreur */
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 24px;
+}
+
+.authSwitch {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #6b7280; /* Gris un peu plus clair */
+    margin-top: 28px;
+}
+
+.authLink {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.authLink:hover {
+    text-decoration: underline;
+}
+
+/* Animation d'apparition (subtile) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cardBody > * {
+    animation: fadeIn 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+.cardBody > *:nth-child(1) { animation-delay: 0.1s; }
+.cardBody > *:nth-child(2) { animation-delay: 0.2s; }
+.cardBody > *:nth-child(3) { animation-delay: 0.3s; }
+.cardBody > *:nth-child(4) { animation-delay: 0.4s; }
+.cardBody > *:nth-child(5) { animation-delay: 0.5s; }

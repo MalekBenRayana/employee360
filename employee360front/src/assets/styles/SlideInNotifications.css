@@ -1,0 +1,115 @@
+.slide-in-notifications {
+    position: fixed; /* Ou absolute selon le contexte */
+    top: 0;
+    right: -300px; /* Initialement caché à droite */
+    width: 300px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    color: #333;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1002; /* Au-dessus du sidebar */
+    padding: 20px;
+    /* Modifier la propriété overflow-y */
+    overflow-y: scroll; /* Affiche la barre de défilement uniquement si le contenu dépasse */
+}
+
+.slide-in-notifications.open {
+    transform: translateX(-300px); /* Faire glisser vers la gauche pour afficher */
+}
+
+.slide-in-notifications h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.slide-in-notifications .notification-list {
+    /* Styles pour la liste des notifications (similaires à ceux du modal) */
+    max-height: calc(100vh - 100px); /* Ajuster la hauteur max pour laisser de l'espace pour le titre et le bouton */
+    overflow-y: auto; /* Activer le défilement *à l'intérieur* de la liste si elle devient trop longue */
+}
+
+.slide-in-notifications .notification-item {
+    padding: 10px 0;
+}
+
+.slide-in-notifications .notification-item strong {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.slide-in-notifications .no-notification {
+    color: #777;
+    font-style: italic;
+}
+
+.slide-in-notifications button {
+    margin-top: 15px;
+}
+
+/* SlideInNotifications.css */
+.slide-in-notifications {
+    /* ... vos styles existants ... */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Ajouter l'opacité à la transition */
+    opacity: 0; /* Initialement transparent */
+}
+
+.slide-in-notifications.open {
+    transform: translateX(-300px);
+    opacity: 1; /* Rendre visible lors de l'ouverture */
+}
+
+.slide-in-notifications .notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.slide-in-notifications .close-button {
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.slide-in-notifications .close-button:hover {
+    color: #333;
+}
+
+.slide-in-notifications .notification-item {
+    padding: 15px 0; /* Augmenter le padding pour plus d'espace */
+    border-bottom: 1px solid #f0f0f0; /* Bordure plus claire */
+    background-color: #fff;
+    color: #333;
+    border-radius: 4px; /* Bords arrondis subtils */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Ombre légère */
+}
+
+.slide-in-notifications .notification-item:last-child {
+    border-bottom: none;
+}
+
+.slide-in-notifications .notification-item strong {
+    font-weight: 600; /* Gras plus prononcé */
+    margin-right: 8px;
+    color: #2c3e50; /* Couleur de texte plus foncée */
+}
+
+.slide-in-notifications .notification-item > div {
+    margin-bottom: 5px;
+}
+
+.slide-in-notifications .notification-item hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.slide-in-notifications .no-notification {
+    color: #999;
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+}

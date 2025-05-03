@@ -1,0 +1,103 @@
+/* src/components/InviteModal.css (ou le nom de votre fichier CSS) */
+
+.modal-header-enhanced {
+    background-color: #007bff; /* Couleur primaire */
+    color: white;
+    border-bottom: 1px solid #0056b3;
+}
+
+.modal-title-enhanced {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.modal-body-enhanced {
+    padding: 20px;
+}
+
+.alert-enhanced {
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.form-group-enhanced {
+    margin-bottom: 15px;
+}
+
+.form-label-enhanced {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.form-control-enhanced {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.form-control-enhanced:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-select-enhanced {
+    appearance: none; /* Supprime les flèches par défaut */
+    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg fill%3D%22%23343a40%22 viewBox%3D%220 0 4 5%22%3E%3Cpath fill-rule%3D%22evenodd%22 d%3D%22M2 0L0 2h4L2 0z%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 8px 10px;
+    padding-right: 2.25rem;
+}
+
+.feedback-enhanced {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.modal-footer-enhanced {
+    border-top: 1px solid #dee2e6;
+    padding: 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-secondary-enhanced {
+    background-color: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.button-secondary-enhanced:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.button-primary-enhanced {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    margin-left: 10px;
+}
+
+.button-primary-enhanced:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.button-disabled-enhanced {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

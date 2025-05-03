@@ -1,0 +1,43 @@
+.evaluation-form-list-container-pro {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.card-form {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-form:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-body-pro {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--bs-primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-danger:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--bs-border-color-translucent);
+}

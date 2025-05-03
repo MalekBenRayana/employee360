@@ -1,0 +1,37 @@
+.totalEvaluationsCard {
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .totalEvaluationsCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .scoreHistoryChart,
+  .performancePointChart {
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .count {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #007bff;
+  }

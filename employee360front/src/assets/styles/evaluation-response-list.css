@@ -1,0 +1,64 @@
+
+.evaluation-response-list-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.table-responsive {
+    margin-top: 1.5rem;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.table tbody td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.2rem;
+}
+
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+    border-color: #6c757d;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.rounded-pill {
+    border-radius: 50rem;
+}
+
+.alert-info {
+    background-color: #e7f5ff;
+    border-color: #cce5ff;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}

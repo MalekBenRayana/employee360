@@ -1,0 +1,125 @@
+/* EditProjectModal.css */
+
+.edit-project-modal-enhanced .modal-header-enhanced {
+    background-color: #007bff; /* Bleu primaire */
+    color: white;
+    border-bottom: 1px solid #0056b3;
+}
+
+.edit-project-modal-enhanced .modal-title-enhanced {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.edit-project-modal-enhanced .modal-body-enhanced {
+    padding: 20px;
+}
+
+.edit-project-modal-enhanced .form-group-enhanced {
+    margin-bottom: 15px;
+}
+
+.edit-project-modal-enhanced .form-label-enhanced {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.edit-project-modal-enhanced .form-control-enhanced {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+}
+
+.edit-project-modal-enhanced .form-control-enhanced:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.edit-project-modal-enhanced .form-select-enhanced {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 8px 10px;
+    padding-right: 2.25rem;
+}
+
+.edit-project-modal-enhanced .form-textarea-enhanced {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+}
+
+.edit-project-modal-enhanced .form-textarea-enhanced:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.edit-project-modal-enhanced .react-select-container-enhanced > div {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+}
+
+.edit-project-modal-enhanced .react-select-container-enhanced:focus-within > div {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.edit-project-modal-enhanced .react-select-enhanced__control {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.edit-project-modal-enhanced .react-select-enhanced__value-container {
+    padding: 0.375rem 0.75rem;
+}
+
+.edit-project-modal-enhanced .react-select-enhanced__indicators {
+    padding-right: 0.75rem;
+}
+
+.edit-project-modal-enhanced .modal-footer-enhanced {
+    border-top: 1px solid #dee2e6;
+    padding: 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.edit-project-modal-enhanced .button-secondary-enhanced {
+    background-color: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.edit-project-modal-enhanced .button-secondary-enhanced:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.edit-project-modal-enhanced .button-primary-enhanced {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    margin-left: 10px;
+}
+
+.edit-project-modal-enhanced .button-primary-enhanced:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}

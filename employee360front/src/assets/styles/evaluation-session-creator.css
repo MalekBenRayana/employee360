@@ -1,0 +1,35 @@
+.evaluation-session-creator-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+}
+
+.form-select:focus {
+    outline: 0;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert-danger {
+    margin-top: 1rem;
+}
+
+#projectId option {
+    color: black !important; /* Essayez une couleur visible */
+    opacity: 1 !important;
+    visibility: visible !important;
+}

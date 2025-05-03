@@ -1,0 +1,49 @@
+.evaluation-response-detail-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 0;
+    border-radius: 0.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.font-weight-bold {
+    font-weight: bold !important;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+    border-color: #6c757d;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.rounded-pill {
+    border-radius: 50rem;
+}

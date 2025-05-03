@@ -1,0 +1,70 @@
+/* CSS pour la gestion des utilisateurs */
+.container-fluid {
+  margin-left: 500px;
+  padding-top: 20px;
+}
+
+.btn-invite {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-invite:hover {
+  background-color: #28a745;
+  color: white;
+  transform: scale(1.05);
+}
+
+.table-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+  background-color: #f8f9fa;
+  color: #343a40;
+}
+
+.table-row:hover {
+  background-color: #f1f1f1;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.action-btn {
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn:focus {
+  outline: none;
+}
+
+.action-btn svg {
+  transition: color 0.3s ease;
+}
+
+.outline-success:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+.outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+
+
+
+

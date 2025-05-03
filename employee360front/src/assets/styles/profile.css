@@ -1,0 +1,133 @@
+.profile-container {
+  padding: 30px;
+}
+
+.profile-header {
+  margin-bottom: 50px;
+}
+
+.profile-title {
+  color: #375a7f;
+  font-weight: 700;
+}
+
+.profile-subtitle {
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.profile-grid {
+  gap: 30px;
+}
+
+.profile-card {
+  border: none !important;
+}
+
+.profile-avatar {
+  margin-bottom: 20px;
+}
+
+.profile-username {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.profile-email,
+.profile-roles {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-section-title {
+  color: #375a7f;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-action-button {
+  font-weight: 500;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.profile-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item {
+  border-color: #f0f0f0;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+}
+
+.list-group-item:first-child {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.list-group-item:last-child {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.avatar-placeholder {
+  border: 2px solid #007bff;
+}
+
+.edit-password-modal {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.edit-password-modal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.edit-password-modal-pro .modal-content {
+  border: none;
+  border-radius: 0.75rem; /* Bords légèrement arrondis pour la modal */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Ombre subtile */
+}
+
+.edit-password-modal-pro .modal-header .btn-close {
+  background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236c757d'%3e%3cpath d='M1.5 1.5l13 13m-13 0l13-13'/%3e%3c/svg%3e") center/1em auto no-repeat;
+  opacity: 0.7;
+}
+
+.edit-password-modal-pro .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.edit-password-modal-pro .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.edit-password-modal-pro .alert {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+.edit-password-modal-pro .alert-danger {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.edit-password-modal-pro .alert-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
