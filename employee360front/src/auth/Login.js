@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/AuthContext';
 import styles from '../assets/styles/Login.module.css';
-import { Card, Form, Button } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
+import logo from '../assets/images/Logo-Proxym.png';
+import backgroundImage from '../assets/images/img.jpg';
 
 import { loginUser, fetchUserRole } from "../services/authService";
 
@@ -50,56 +52,59 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <Card className={styles.card}>
-        <Card.Body className={styles.cardBody}>
-          <h2 className={styles.heading}>Connexion</h2>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label className={styles.label}>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Entrez votre email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={styles.input}
-              />
-            </Form.Group>
+    <div className={styles.loginPage}>
+      <div className={styles.loginContainer}>
+        <div className={styles.logoContainer}>
+          <img src={logo} alt="Proxym Logo" className={styles.logo} />
+        </div>
+        <Form onSubmit={handleSubmit} className={styles.loginForm}>
+          <Form.Group className={styles.formGroup}>
+            <Form.Control
+              type="email"
+              placeholder="Entrez votre adresse e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={styles.input}
+            />
+          </Form.Group>
 
-            <Form.Group className={styles.formGroup}>
-              <Form.Label className={styles.label}>Mot de passe</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Entrez votre mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={styles.input}
-              />
-            </Form.Group>
+          <Form.Group className={styles.formGroup}>
+            <Form.Control
+              type="password"
+              placeholder="Entrez votre mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className={styles.input}
+            />
+          </Form.Group>
 
-            <Button type="submit" className={styles.button}>
-              Se connecter
-            </Button>
-          </Form>
+          <div className={styles.rememberForgotPassword}>
+            <Form.Check
+              type="checkbox"
+              label="Se souvenir de moi"
+              className={styles.rememberMe}
+            />
+            <a href="/register" className={styles.forgotPassword}>
+              Pas encore un compte ?
+            </a>
+          </div>
+
+          <Button type="submit" className={styles.loginButton}>
+            Se connecter
+          </Button>
 
           {error && (
             <div className={styles.error}>
               <small>{error}</small>
             </div>
           )}
-
-          <div className={styles.authSwitch}>
-            <small>
-              Pas encore de compte ?{" "}
-              <a href="/register" className={styles.authLink}>
-                Inscrivez-vous ici
-              </a>
-            </small>
-          </div>
-        </Card.Body>
-      </Card>
+        </Form>
+      </div>
+      <div className={styles.background}>
+        <img src={backgroundImage} alt="Fond Bleu" className={styles.backgroundImage} />
+      </div>
     </div>
   );
 };

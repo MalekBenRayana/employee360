@@ -1,0 +1,53 @@
+  .app-layout .MuiCard-root {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    background-color: #fff;
+  }
+  
+  .app-layout .MuiCardContent-root {
+    padding: 16px;
+  }
+  
+  .app-layout .MuiTypography-h6 {
+    color: #777;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  
+  .app-layout .MuiTypography-h4 {
+    color: #333;
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+  
+  .app-layout .recharts-responsive-container {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+  }
+  
+  .app-layout .MuiCardContent-root > .MuiTypography-h6 {
+    font-size: 1.1rem;
+    color: #555;
+    font-weight: 500;
+  }
+  
+  .app-layout .recharts-legend-item {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .app-layout .MuiCircularProgress-root {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .app-layout .MuiAlert-root {
+    margin-top: 20px;
+  }

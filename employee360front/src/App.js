@@ -31,6 +31,8 @@ import DepartmentManagement from "./pages/DepartmentManagement";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import FormulaManager from './components/evaluation/FormulaManager';
+import GestionPersonnel from './pages/GestionPersonnel';
+import EmployeeHistory from './components/EmployeeHistory';
 
 const App = () => {
   return (
@@ -68,6 +70,15 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/gestion-personnel"
+              element={
+                <ProtectedRoute roleRequired="admin">
+                  <GestionPersonnel />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/admin/users-management"
               element={
@@ -197,7 +208,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route 
+            <Route
               path="/performance-points"
               element={
                 <ProtectedRoute>
@@ -206,11 +217,20 @@ const App = () => {
               }
             />
 
-        <Route 
+        <Route
               path="/formules"
               element={
                 <ProtectedRoute>
                   <FormulaManager/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/employees/:id/stats"
+              element={
+                <ProtectedRoute roleRequired="admin">
+                  <EmployeeHistory />
                 </ProtectedRoute>
               }
             />

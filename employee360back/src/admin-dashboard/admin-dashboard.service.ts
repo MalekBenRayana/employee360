@@ -1,6 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, IsNull, In } from 'typeorm';
+import {
+  Repository,
+  Not,
+  IsNull,
+  In,
+  LessThan,
+  Raw,
+  ILike,
+  FindOptionsOrder,
+} from 'typeorm';
 import { User } from '../user/user.entity';
 import { PerformancePointType } from '../performance-point-type/performance-point-type.entity';
 import { EmployeePointPeriodAggregate } from '../employee-point-period-aggregate/employee-point-period-aggregate.entity';
@@ -18,53 +27,11 @@ export class AdminDashboardService {
     private readonly performancePointTypeRepository: Repository<PerformancePointType>,
     @InjectRepository(EmployeePointPeriodAggregate)
     private readonly employeePointPeriodAggregateRepository: Repository<EmployeePointPeriodAggregate>,
-    @InjectRepository(EvaluationSession) // Inject EvaluationSession repository if it exists
-    private readonly evaluationSessionRepository?: Repository<EvaluationSession>,
+    @InjectRepository(EvaluationSession)
+    private readonly evaluationSessionRepository: Repository<EvaluationSession>,
     @InjectRepository(PerformancePointChange)
-    private readonly performancePointChangeRepository?: Repository<PerformancePointChange>,
+    private readonly performancePointChangeRepository: Repository<PerformancePointChange>,
   ) {}
-
-  async getAdminDashboardData() {
-    const totalEmployees = await this.getTotalEmployees();
-    const totalPerformancePointTypes =
-      await this.getTotalPerformancePointTypes();
-    const totalEvaluations = await this.getTotalEvaluations();
-    const averageOverallScoreCurrentPeriod =
-      await this.getAverageOverallScoreCurrentPeriod();
-    const averageScoresByPerformancePointCurrentPeriod =
-      await this.getAverageScoresByPerformancePointCurrentPeriod();
-    const evaluationsCurrentPeriod = await this.getEvaluationsCurrentPeriod();
-    const employeesWithoutEvaluationCurrentPeriod =
-      await this.getEmployeesWithoutEvaluationCurrentPeriod();
-    const averageOverallScoreTrend = await this.getAverageOverallScoreTrend(6);
-    const evaluationsTrend = await this.getEvaluationsTrend(6);
-    const employeeScoreDistributionCurrentPeriod =
-      await this.getEmployeeScoreDistributionCurrentPeriod();
-    const performancePointScoreTrend =
-      await this.getPerformancePointScoreTrend(3);
-    const evaluationsInProgress = this.evaluationSessionRepository
-      ? await this.getEvaluationsInProgress()
-      : 0;
-    const performancePointParticipationRate =
-      await this.getPerformancePointParticipationRate();
-
-    return {
-      totalEmployees,
-      totalPerformancePointTypes,
-      totalEvaluations,
-      averageOverallScoreCurrentPeriod,
-      averageScoresByPerformancePointCurrentPeriod,
-      evaluationsCurrentPeriod,
-      employeesWithoutEvaluationCurrentPeriod,
-      averageOverallScoreTrend,
-      evaluationsTrend,
-      employeeScoreDistributionCurrentPeriod,
-
-      performancePointScoreTrend,
-      evaluationsInProgress,
-      performancePointParticipationRate,
-    };
-  }
 
   async getTotalEmployees(): Promise<number> {
     return this.userRepository.count({});
@@ -162,15 +129,24 @@ export class AdminDashboardService {
   }
 
   async getAverageOverallScoreTrend(
-    numberOfPeriods: number,
+    numberOfPeriods: number, // Nombre de trimestres à afficher
   ): Promise<{ period: string; averageScore: number }[]> {
-    const periods = await this.employeePointPeriodAggregateRepository
-      .createQueryBuilder('aggregate')
-      .select('DISTINCT aggregate.period', 'period')
-      .orderBy('aggregate.period', 'DESC')
-      .limit(numberOfPeriods)
-      .getRawMany()
-      .then((results) => results.map((r) => r.period));
+    const currentPeriod = this.getCurrentPeriodIdentifier();
+    const [currentYear, currentQ] = currentPeriod.split('-Q').map(Number);
+    const periods: string[] = [];
+
+    let year = currentYear;
+    let quarter = currentQ;
+
+    for (let i = 0; i < numberOfPeriods; i++) {
+      periods.push(`${year}-Q${quarter}`);
+
+      quarter--;
+      if (quarter <= 0) {
+        year--;
+        quarter = 4;
+      }
+    }
 
     const trendData = await Promise.all(
       periods.map(async (period) => {
@@ -196,7 +172,6 @@ export class AdminDashboardService {
 
     return trendData.sort((a, b) => a.period.localeCompare(b.period)); // Sort chronologically
   }
-
   async getEvaluationsTrend(
     numberOfPeriods: number,
   ): Promise<{ period: string; numberOfEvaluations: number }[]> {
@@ -247,7 +222,7 @@ export class AdminDashboardService {
     };
 
     employeeAverages.forEach((empAvg) => {
-      const score = parseFloat(empAvg.averageScore || '0'); // Handle null or undefined
+      const score = parseFloat(empAvg.averageScore || '0');
       if (score >= 0 && score < 2) distribution['0-2']++;
       else if (score >= 2 && score < 4) distribution['2-4']++;
       else if (score >= 4 && score < 6) distribution['4-6']++;
@@ -329,8 +304,20 @@ export class AdminDashboardService {
   private getCurrentPeriodIdentifier(): string {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    return `${year}-${month.toString().padStart(2, '0')}`;
+    const month = now.getMonth() + 1; // Les mois vont de 0 à 11
+    let quarter: number;
+
+    if (month >= 1 && month <= 3) {
+      quarter = 1;
+    } else if (month >= 4 && month <= 6) {
+      quarter = 2;
+    } else if (month >= 7 && month <= 9) {
+      quarter = 3;
+    } else {
+      quarter = 4;
+    }
+
+    return `${year}-Q${quarter}`;
   }
 
   async getPerformancePointParticipationRate(): Promise<
@@ -366,5 +353,280 @@ export class AdminDashboardService {
       }),
     );
     return participationRates;
+  }
+
+  async getEvaluationCompletionRateCurrentPeriod(): Promise<number> {
+    const currentPeriod = this.getCurrentPeriodIdentifier();
+    const totalEmployeesInPeriod = await this.userRepository.count({});
+    const completedEvaluations =
+      await this.employeePointPeriodAggregateRepository.count({
+        where: { period: currentPeriod, numberOfEvaluations: Not(IsNull()) },
+      });
+
+    if (totalEmployeesInPeriod === 0) {
+      return 0;
+    }
+    return parseFloat(
+      ((completedEvaluations / totalEmployeesInPeriod) * 100).toFixed(2),
+    );
+  }
+
+  async getEvaluationsLateCurrentPeriod(): Promise<number> {
+    if (!this.evaluationSessionRepository) return 0;
+    const currentPeriod = this.getCurrentPeriodIdentifier();
+    const [year, quarter] = currentPeriod.split('-Q');
+    let startMonth: string = '01'; // Valeur par défaut
+    let endMonth: string = '03'; // Valeur par défaut
+
+    if (quarter === '1') {
+      startMonth = '01';
+      endMonth = '03';
+    } else if (quarter === '2') {
+      startMonth = '04';
+      endMonth = '06';
+    } else if (quarter === '3') {
+      startMonth = '07';
+      endMonth = '09';
+    } else if (quarter === '4') {
+      startMonth = '10';
+      endMonth = '12';
+    }
+
+    return this.evaluationSessionRepository.count({
+      where: {
+        endDate: LessThan(new Date()),
+        status: Not('COMPLETED'),
+        startDate: Raw(
+          (alias) => `TO_CHAR(${alias}, 'YYYY-MM') BETWEEN :start AND :end`,
+          {
+            start: `<span class="math-inline">\{year\}\-</span>{startMonth}`,
+            end: `<span class="math-inline">\{year\}\-</span>{endMonth}`,
+          },
+        ),
+      },
+    });
+  }
+  async getAverageCompletionTimeCurrentPeriod(): Promise<string> {
+    if (!this.evaluationSessionRepository) return 'N/A';
+
+    const currentPeriodStart = new Date(
+      this.getCurrentPeriodIdentifier() + '-01',
+    );
+    const currentPeriodEnd = new Date(currentPeriodStart);
+    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 3);
+
+    const sessions = await this.evaluationSessionRepository.find({
+      where: {
+        endDate: Not(IsNull()),
+        startDate: Raw(
+          (alias) => `TO_CHAR(${alias}, 'YYYY-MM') BETWEEN :start AND :end`,
+          {
+            start: `<span class="math-inline">\{currentPeriodStart\.getFullYear\(\)\}\-</span>{(currentPeriodStart.getMonth() + 1).toString().padStart(2, '0')}`,
+            end: `<span class="math-inline">\{currentPeriodEnd\.getFullYear\(\)\}\-</span>{(currentPeriodEnd.getMonth() + 1).toString().padStart(2, '0')}`,
+          },
+        ),
+      },
+    });
+
+    if (sessions.length === 0) {
+      return 'N/A';
+    }
+
+    let totalDurationSeconds = 0;
+    for (const session of sessions) {
+      if (session.startDate && session.endDate) {
+        totalDurationSeconds +=
+          (session.endDate.getTime() - session.startDate.getTime()) / 1000;
+      }
+    }
+
+    const averageSeconds = totalDurationSeconds / sessions.length;
+
+    if (isNaN(averageSeconds) || averageSeconds === 0) {
+      return 'N/A';
+    }
+
+    const days = Math.floor(averageSeconds / (3600 * 24));
+    const hours = Math.floor((averageSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((averageSeconds % 3600) / 60);
+    return `${days}j ${hours}h ${minutes}m`;
+  }
+
+  async searchEmployees(query: string): Promise<User[]> {
+    return this.userRepository.find({
+      where: [
+        { email: ILike(`%${query}%`) }, // Utilisez ILike pour l'email
+        { username: ILike(`%${query}%`) }, // Utilisez ILike pour le nom d'utilisateur
+      ],
+      take: 10,
+    });
+  }
+
+  async getEmployeeHistory(employeeId: number): Promise<{
+    evaluations: any[];
+    performancePoints: any[];
+    aggregateScores: any[];
+    employee: any;
+  }> {
+    const employee = await this.userRepository.findOne({
+      where: { id: employeeId },
+    });
+    if (!employee) {
+      throw new NotFoundException(`Employé avec l'ID ${employeeId} non trouvé`);
+    }
+
+    const evaluations =
+      (await this.evaluationSessionRepository?.find({
+        where: { evaluatee: { id: employeeId } },
+        relations: [
+          'evaluatee',
+          'evaluatorAssignments',
+          'evaluatorAssignments.evaluator',
+        ],
+        order: { startDate: 'DESC' },
+      })) || [];
+
+    const performancePoints =
+      (await this.performancePointChangeRepository?.find({
+        where: {
+          responseValue: {
+            evaluationResponse: { evaluatee: { id: employeeId } },
+          },
+        },
+        relations: [
+          'responseValue',
+          'responseValue.evaluationResponse',
+          'responseValue.evaluationResponse.evaluatee',
+          'pointType',
+        ],
+        order: {
+          responseValue: { evaluationResponse: { submittedAt: 'DESC' } },
+        } as any,
+      })) || [];
+
+    const aggregateScores =
+      (await this.employeePointPeriodAggregateRepository?.find({
+        where: { evaluatee: { id: employeeId } },
+        relations: ['evaluatee', 'pointType'],
+        order: { period: 'DESC' },
+      })) || [];
+
+    return {
+      evaluations,
+      performancePoints,
+      aggregateScores,
+      employee,
+    };
+  }
+
+  async getAllEmployees(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  async getScorePerProjectByUser(evaluateeId: number) {
+    const rawScores = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.evaluationSessionsAsEvaluatee', 'evaluationSession')
+      .leftJoin('evaluationSession.project', 'project')
+      .leftJoin('evaluationSession.responses', 'evaluationResponse')
+      .select([
+        'user.id',
+        'user.username',
+        'project.project_id',
+        'project.project_name',
+        'AVG(evaluationResponse.score) AS average_score',
+      ])
+      .where('user.id = :evaluateeId', { evaluateeId })
+      .groupBy('project.project_id')
+      .addGroupBy('user.id')
+      .addGroupBy('project.project_name')
+      .getRawMany();
+
+    const scoresByProject: {
+      [projectId: number]: { projectName: string; averageScore: number | null };
+    } = {};
+
+    rawScores.forEach((result) => {
+      const projectId = result.project_project_id;
+      const projectName = result.project_project_name;
+      const averageScore = result.average_score; // Récupérez la colonne agrégée
+
+      if (!scoresByProject[projectId]) {
+        scoresByProject[projectId] = { projectName, averageScore: null };
+      }
+
+      if (averageScore !== null) {
+        scoresByProject[projectId].averageScore = parseFloat(
+          averageScore.toFixed(2),
+        );
+      }
+    });
+
+    return Object.values(scoresByProject);
+  }
+
+  async getEmployeePerformancePoints(
+    employeeId: number,
+  ): Promise<PerformancePointChange[]> {
+    const employee = await this.userRepository.findOne({
+      where: { id: employeeId },
+    });
+    if (!employee) {
+      throw new NotFoundException(`Employé avec l'ID ${employeeId} non trouvé`);
+    }
+
+    return this.performancePointChangeRepository.find({
+      where: {
+        responseValue: {
+          evaluationResponse: { evaluatee: { id: employeeId } },
+        },
+      },
+      relations: [
+        'responseValue',
+        'responseValue.evaluationResponse',
+        'responseValue.evaluationResponse.evaluatee',
+        'pointType',
+      ],
+      order: {
+        responseValue: { evaluationResponse: { submittedAt: 'DESC' } },
+      } as any,
+    });
+  }
+
+  async getScoresByPerformancePointAndProjectForEmployee(
+    evaluateeId: number,
+  ): Promise<
+    {
+      projectId: number;
+      projectName: string;
+      performancePointName: string;
+      score: number | null;
+    }[]
+  > {
+    const rawScores = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.evaluationSessionsAsEvaluatee', 'evaluationSession')
+      .leftJoin('evaluationSession.project', 'project')
+      .leftJoin('evaluationSession.responses', 'evaluationResponse')
+      .leftJoin('evaluationResponse.responseValues', 'formResponseValue')
+      .leftJoin('formResponseValue.performancePointChanges', 'performancePointChange')
+      .leftJoin('performancePointChange.pointType', 'performancePointType')
+      .select([
+        'project.project_id AS projectId',
+        'project.project_name AS projectName',
+        'performancePointType.name AS performancePointName',
+        'performancePointChange.score AS score',
+      ])
+      .where('user.id = :evaluateeId', { evaluateeId })
+      .orderBy('projectId')
+      .addOrderBy('performancePointName')
+      .getRawMany();
+
+    return rawScores.map((rawScore) => ({
+      projectId: rawScore.projectid, // Assumant des noms de colonnes en minuscules
+      projectName: rawScore.projectname, // Assumant des noms de colonnes en minuscules
+      performancePointName: rawScore.performancepointname, // Assumant des noms de colonnes en minuscules
+      score: rawScore.score !== null && rawScore.score !== undefined ? parseFloat(rawScore.score) : null,
+    }));
   }
 }

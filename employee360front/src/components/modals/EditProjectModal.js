@@ -103,36 +103,36 @@ const EditProjectModal = ({ show, handleClose, project, refreshProjects }) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.project_name || !formData.description || !formData.status) {
-            return;
-        }
-
-        const usersWithRoles = formData.selectedUsers.map(userId => ({
-            user_id: parseInt(userId, 10),
-            role_id: parseInt(userRoles[userId], 10) || null, // Ensure role_id is not undefined, send null if not selected
-
-        const projectToUpdate = {
-            project_name: formData.project_name,
-            description: formData.description,
-            start_date: new Date(formData.start_date).toISOString(),
-            end_date: new Date(formData.end_date).toISOString(),
-            status: formData.status,
-            priority: formData.priority,
-            department_id: parseInt(formData.selectedDepartment, 10),
-            manager_id: parseInt(formData.selectedManager, 10),
-            users: usersWithRoles,
-        };
-
-        try {
-            await axios.put(`http://localhost:3000/projects/${project.project_id}`, projectToUpdate);
-            refreshProjects();
-            handleClose();
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour du projet', error);
-        }
-    };
-
+                e.preventDefault();
+                if (!formData.project_name || !formData.description || !formData.status) {
+                    return;
+                }
+        
+                const usersWithRoles = formData.selectedUsers.map(userId => ({
+                    user_id: parseInt(userId, 10),
+                    role_id: parseInt(userRoles[userId], 10) || null, // Ensure role_id is not undefined, send null if not selected
+                }));
+        
+                const projectToUpdate = {
+                    project_name: formData.project_name,
+                    description: formData.description,
+                    start_date: new Date(formData.start_date).toISOString(),
+                    end_date: new Date(formData.end_date).toISOString(),
+                    status: formData.status,
+                    priority: formData.priority,
+                    department_id: parseInt(formData.selectedDepartment, 10),
+                    manager_id: parseInt(formData.selectedManager, 10),
+                    users: usersWithRoles,
+                };
+        
+                try {
+                    await axios.put(`http://localhost:3000/projects/${project.project_id}`, projectToUpdate);
+                    refreshProjects();
+                    handleClose();
+                } catch (error) {
+                    console.error('Erreur lors de la mise à jour du projet', error);
+                }
+            };
     return (
         <Modal show={show} onHide={handleClose} size="lg" centered className="edit-project-modal-enhanced">
             <Modal.Header closeButton className="modal-header-enhanced">

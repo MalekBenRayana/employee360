@@ -95,12 +95,19 @@ import React, { useState, useContext } from "react";
 
         {role === "admin" && (
           <>
+          <li>
+              <Link to="/gestion-personnel">
+                <FaTasks />
+                {!collapsed && <span>Gestion du Personnel</span>}
+              </Link>
+            </li>
             <li>
               <Link to="/project-management">
                 <FaTasks />
                 {!collapsed && <span>Gestion des Projets</span>}
               </Link>
             </li>
+            
             <li>
               <Link to="/department-management">
                 <FaBuilding />

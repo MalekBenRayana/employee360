@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 
@@ -8,6 +8,7 @@ import { User } from '../user/user.entity';
 import { Project } from '../projects/project.entity';
 import { EvaluatorAssignment } from '../evaluator-assignment/evaluator-assignment.entity';
 import { EmailService } from '../email/email.service';
+import { NotificationService } from '../notification/notification.service'; // Importez le service de notification
 
 @Injectable()
 export class EvaluationSessionService {
@@ -28,6 +29,8 @@ export class EvaluationSessionService {
     private readonly evaluatorAssignmentRepo: Repository<EvaluatorAssignment>,
 
     private readonly emailService: EmailService,
+    @Inject(NotificationService) // Injectez le service de notification
+    private readonly notificationService: NotificationService,
   ) {}
 
   async startSession(id: number): Promise<EvaluationSession> {
@@ -118,6 +121,10 @@ export class EvaluationSessionService {
           error,
         );
       }
+
+      // Envoyer la notification
+      const notificationMessage = `Nouvelle évaluation disponible pour ${evaluateeUser.username} sur le projet "${project.project_name}".`;
+      await this.notificationService.notifyUser(evaluator.id, notificationMessage);
     }
 
     return { sessionId: savedSession.id, session: savedSession };
@@ -175,6 +182,9 @@ export class EvaluationSessionService {
             error,
           );
         }
+
+        const notificationMessage = `Nouvelle évaluation disponible pour ${session.evaluatee.username} sur le projet "${session.project.project_name}".`;
+        await this.notificationService.notifyUser(evaluatorId, notificationMessage);
       }
     }
   }

@@ -78,8 +78,13 @@ export class EmployeePointPeriodAggregateService {
     aggregateData: Partial<EmployeePointPeriodAggregate>,
   ): Promise<EmployeePointPeriodAggregate> {
     const aggregate = await this.findOne(id);
-    const updatedAggregate = { ...aggregate, ...aggregateData };
-    await this.employeePointPeriodAggregateRepository.save(updatedAggregate);
+    if (aggregateData.averageScore !== undefined) {
+      aggregate.averageScore = aggregateData.averageScore;
+    }
+    if (aggregateData.numberOfEvaluations !== undefined) {
+      aggregate.numberOfEvaluations = aggregateData.numberOfEvaluations;
+    }
+    await this.employeePointPeriodAggregateRepository.save(aggregate);
     return this.findOne(id);
   }
 

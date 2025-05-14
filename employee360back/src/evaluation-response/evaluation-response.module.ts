@@ -14,7 +14,7 @@ import { FormulaModule } from 'src/formula/formula.module';
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
 import { FormResponseValue } from 'src/form-response-value/form-response-value.entity';
 import { Formula } from 'src/formula/formula.entity';
-import { EmployeePointPeriodAggregateModule } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.module'; // Importez le module nécessaire
+import { EmployeePointPeriodAggregateModule } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.module';
 import { PerformancePointTypeModule } from 'src/performance-point-type/performance-point-type.module';
 
 @Module({
@@ -30,7 +30,7 @@ import { PerformancePointTypeModule } from 'src/performance-point-type/performan
     UserModule,
     forwardRef(() => EvaluationFormModule),
     forwardRef(() => EvaluationSessionModule),
-    FormResponseValueModule,
+    forwardRef(() => FormResponseValueModule), // Utilisez forwardRef ici
     FormulaModule,
     TypeOrmModule.forFeature([Formula]),
     EmployeePointPeriodAggregateModule,

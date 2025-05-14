@@ -38,6 +38,7 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
       database: 'pfe',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
     }),
     UserModule,
     AuthModule,

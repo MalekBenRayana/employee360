@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { FormResponseValueService } from '../form-response-value/form-response-value.service';
 import { EvaluationResponse } from './evaluation-response.entity';
 import { EvaluationSession } from 'src/evaluation-session/evaluation-session.entity';
@@ -41,7 +41,13 @@ export class EvaluationResponseService {
   ) {}
 
   async submitResponse(data: SubmitResponseData): Promise<EvaluationResponse> {
-    const { sessionId, evaluatorId, evaluateeId, answers, score } = data;
+    const {
+      sessionId,
+      evaluatorId,
+      evaluateeId,
+      answers,
+      score: initialScore,
+    } = data;
 
     if (!sessionId || !evaluatorId || !evaluateeId) {
       throw new Error(
@@ -80,11 +86,14 @@ export class EvaluationResponseService {
       session,
       evaluator,
       evaluatee,
-      score,
+      score: initialScore, // Utilisation du score initial fourni
       responseValues: [],
     });
 
     const savedResponse = await this.responseRepo.save(response);
+    console.log('[SUBMIT RESPONSE] savedResponse ID:', savedResponse.id);
+
+    let calculatedTotalScore = 0;
 
     if (
       answers &&
@@ -115,6 +124,14 @@ export class EvaluationResponseService {
 
         if (question) {
           try {
+            console.log(
+              '[SUBMIT RESPONSE - CREATING FORM VALUE] Objet passé à create:',
+              {
+                evaluationResponse: savedResponse,
+                fieldKey: question.id,
+                fieldValue: String(answer),
+              },
+            );
             const responseValueRecord =
               await this.formResponseValueService.create({
                 evaluationResponse: savedResponse,
@@ -177,6 +194,7 @@ export class EvaluationResponseService {
                     'score:',
                     calculatedScore,
                   );
+                  calculatedTotalScore += calculatedScore;
                 }
               }
             }
@@ -193,13 +211,31 @@ export class EvaluationResponseService {
         }
       }
 
+      console.log(
+        '[SUBMIT RESPONSE] Score total calculé pour la réponse ID:',
+        savedResponse.id,
+        ':',
+        calculatedTotalScore.toFixed(2),
+      );
+
+      // Mettre à jour uniquement le score de l'entité EvaluationResponse
+      await this.responseRepo.update(savedResponse.id, {
+        score: parseFloat(calculatedTotalScore.toFixed(2)),
+      });
+      console.log(
+        '[SUBMIT RESPONSE] Entité EvaluationResponse mise à jour avec le score total (sans toucher aux autres champs).',
+      );
+
       if (session.evaluatee) {
         const evaluateeIdForAggregate = session.evaluatee.id;
-        const yearForAggregate = new Date(session.startDate || new Date())
-          .getFullYear()
-          .toString();
+        const evaluationDate = session.startDate || new Date();
+        const year = evaluationDate.getFullYear();
+        const month = evaluationDate.getMonth();
+        const quarter = Math.floor(month / 3) + 1;
+        const periodForAggregate = `${year}-Q${quarter}`;
+
         console.log(
-          `[AGGREGATE - START] Traitement pour l'évalué ID: ${evaluateeIdForAggregate}, Année: ${yearForAggregate}`,
+          `[AGGREGATE - START] Traitement pour l'évalué ID: ${evaluateeIdForAggregate}, Période: ${periodForAggregate}`,
         );
 
         const performancePointChangesForAggregate =
@@ -230,7 +266,7 @@ export class EvaluationResponseService {
           })),
         );
         console.log(
-          `[AGGREGATE - FIND CHANGES] Nombre de PerformancePointChanges trouvés pour l'évalué ${evaluateeIdForAggregate}: ${performancePointChangesForAggregate.filter((pc) => pc.responseValue?.evaluationResponse?.evaluatee?.id === 11).length}`,
+          `[AGGREGATE - FIND CHANGES] Nombre de PerformancePointChanges trouvés pour l'évalué ${evaluateeIdForAggregate}: ${performancePointChangesForAggregate.filter((pc) => pc.responseValue?.evaluationResponse?.evaluatee?.id === evaluateeIdForAggregate).length}`,
         );
 
         const aggregatedScores: {
@@ -256,12 +292,12 @@ export class EvaluationResponseService {
           const currentPointTypeId = parseInt(pointTypeId);
 
           console.log(
-            `[AGGREGATE - FIND EXISTING] Recherche de l'agrégat existant pour l'évalué ${evaluateeIdForAggregate}, PointType ID: ${currentPointTypeId}, Année: ${yearForAggregate}`,
+            `[AGGREGATE - FIND EXISTING] Recherche de l'agrégat existant pour l'évalué ${evaluateeIdForAggregate}, PointType ID: ${currentPointTypeId}, Période: ${periodForAggregate}`,
           );
           const existingAggregate =
             await this.employeePointPeriodAggregateService.findByEvaluateeAndPeriodAndPointType(
               evaluateeIdForAggregate,
-              yearForAggregate,
+              periodForAggregate,
               currentPointTypeId,
             );
           console.log(
@@ -275,7 +311,7 @@ export class EvaluationResponseService {
 
           if (existingAggregate && pointType) {
             console.log(
-              `[AGGREGATE - UPDATE] Mise à jour de l'agrégat ID ${existingAggregate.id} pour l'évalué ${evaluateeIdForAggregate}, PointType ID ${currentPointTypeId}, averageScore: ${averageScore}, numberOfEvaluations: ${existingAggregate.numberOfEvaluations + 1}`,
+              `[AGGREGATE - UPDATE - DEBUG] Mise à jour avec: evaluateeId=${evaluateeIdForAggregate}, period=${periodForAggregate}, pointTypeId=${currentPointTypeId}, averageScore=${averageScore}, evaluations=${existingAggregate.numberOfEvaluations + 1}`,
             );
             await this.employeePointPeriodAggregateService.update(
               existingAggregate.id,
@@ -289,12 +325,12 @@ export class EvaluationResponseService {
             );
           } else if (pointType) {
             console.log(
-              `[AGGREGATE - CREATE] Création d'un nouvel agrégat pour l'évalué ${evaluateeIdForAggregate}, PointType ID ${currentPointTypeId}, Année: ${yearForAggregate}, averageScore: ${averageScore}, numberOfEvaluations: 1`,
+              `[AGGREGATE - CREATE - DEBUG] Création avec: evaluateeId=${evaluateeIdForAggregate}, period=${periodForAggregate}, pointTypeId=${currentPointTypeId}, averageScore=${averageScore}`,
             );
             await this.employeePointPeriodAggregateService.create({
               evaluatee: session.evaluatee,
               pointType: pointType,
-              period: yearForAggregate,
+              period: periodForAggregate,
               averageScore: averageScore,
               numberOfEvaluations: 1,
             });
@@ -314,8 +350,8 @@ export class EvaluationResponseService {
         'session',
         'session.form',
         'responseValues',
-        'responseValues.evaluationResponse',
-        'responseValues.evaluationResponse.session',
+        // 'responseValues.evaluationResponse', // NE PAS charger cette relation
+        // 'responseValues.evaluationResponse.session', // NE PAS charger cette relation
       ],
     });
     if (!loadedResponse) {

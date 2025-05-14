@@ -8,6 +8,7 @@ import { ProjectsModule } from 'src/projects/projects.module';
 import { UserModule } from 'src/user/user.module';
 import { EvaluatorAssignmentModule } from '../evaluator-assignment/evaluator-assignment.module';
 import { EmailModule } from 'src/email/email.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { EmailModule } from 'src/email/email.module';
     UserModule,
     EvaluatorAssignmentModule,
     EmailModule,
+    NotificationModule,
   ],
   providers: [EvaluationSessionService],
   controllers: [EvaluationSessionController],

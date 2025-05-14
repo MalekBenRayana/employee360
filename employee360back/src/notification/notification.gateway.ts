@@ -9,6 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { forwardRef, Inject } from '@nestjs/common';
 import { NotificationService } from './notification.service';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -21,7 +22,8 @@ export class NotificationGateway
   @WebSocketServer()
   server: Server;
 
-  private connectedClients: Set<string> = new Set();
+  private connectedClients: Map<string, number> = new Map(); // Stocke le socket ID et l'userId
+  private readonly logger = new Logger(NotificationGateway.name);
 
   constructor(
     @Inject(forwardRef(() => NotificationService))
@@ -29,16 +31,21 @@ export class NotificationGateway
   ) {}
 
   handleConnection(client: Socket) {
-    console.log(`✅ Client connecté: ${client.id}`);
-    if (!client.id) {
-      console.error('❌ client.id est undefined lors de la connexion');
-      return;
+    this.logger.log(`✅ Client connecté: ${client.id}`);
+    const userId = client.handshake.query.userId as string; // Récupère l'userId comme string
+
+    if (userId) {
+      this.connectedClients.set(client.id, parseInt(userId, 10)); // Associe le socket ID à l'userId
+      client.join(`user-${userId}`);
+      this.logger.log(`🔗 Client ${client.id} (user ${userId}) a rejoint la room user-${userId}`);
+    } else {
+      this.logger.warn(`⚠️ Client ${client.id} connecté sans userId.`);
     }
-    this.connectedClients.add(client.id);
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`❌ Client déconnecté: ${client.id}`);
+    const userId = this.connectedClients.get(client.id);
+    this.logger.log(`❌ Client déconnecté: ${client.id}${userId ? ` (user ${userId})` : ''}`);
     this.connectedClients.delete(client.id);
   }
 
@@ -46,9 +53,9 @@ export class NotificationGateway
     const roomName = `user-${userId}`;
     if (this.server.sockets.adapter.rooms.get(roomName)) {
       this.server.to(roomName).emit('newNotification', { message });
-      console.log(`📩 Notification envoyée à ${roomName}: ${message}`);
+      this.logger.log(`📩 Notification envoyée à ${roomName} (user ${userId}): ${message}`);
     } else {
-      console.error(
+      this.logger.error(
         `❌ Room ${roomName} introuvable pour l'utilisateur ${userId}`,
       );
     }
@@ -56,30 +63,30 @@ export class NotificationGateway
 
   sendGlobalNotification(message: string) {
     this.server.emit('newGlobalNotification', { message });
-    console.log(`🌍 Notification globale envoyée: ${message}`);
+    this.logger.log(`🌍 Notification globale envoyée: ${message}`);
   }
 
   @SubscribeMessage('joinUserRoom')
   async handleJoinRoom(@MessageBody() userId: number, client: Socket) {
     if (!client || !client.id) {
-      console.error('❌ client ou client.id est undefined dans handleJoinRoom');
+      this.logger.error('❌ client ou client.id est undefined dans handleJoinRoom');
       return;
     }
 
     if (!userId) {
-      console.error('❌ userId est invalide ou undefined');
+      this.logger.error('❌ userId est invalide ou undefined');
       return;
     }
 
     const roomName = `user-${userId}`;
 
     if (client.rooms.has(roomName)) {
-      console.log(
+      this.logger.log(
         `🔗 Le client ${client.id} est déjà dans la room ${roomName}`,
       );
     } else {
       client.join(roomName);
-      console.log(`🔗 Client ${client.id} a rejoint la room ${roomName}`);
+      this.logger.log(`🔗 Client ${client.id} a rejoint la room ${roomName}`);
     }
 
     client.emit('joinedRoom', `Vous avez rejoint la room pour ${roomName}`);
