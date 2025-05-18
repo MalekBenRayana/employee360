@@ -10,6 +10,7 @@ import { Formula } from 'src/formula/formula.entity';
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
 import { EmployeePointPeriodAggregateService } from '../employee-point-period-aggregate/employee-point-period-aggregate.service';
 import { PerformancePointType } from 'src/performance-point-type/performance-point-type.entity';
+import { EmployeeSelfEvaluationService } from '../employee-self-evaluation/employee-self-evaluation.service';
 
 interface SubmitResponseData {
   sessionId?: number;
@@ -38,6 +39,7 @@ export class EvaluationResponseService {
     private readonly employeePointPeriodAggregateService: EmployeePointPeriodAggregateService,
     @InjectRepository(PerformancePointType)
     private readonly performancePointTypeRepo: Repository<PerformancePointType>,
+    private readonly employeeSelfEvaluationService: EmployeeSelfEvaluationService,
   ) {}
 
   async submitResponse(data: SubmitResponseData): Promise<EvaluationResponse> {
@@ -86,7 +88,7 @@ export class EvaluationResponseService {
       session,
       evaluator,
       evaluatee,
-      score: initialScore, // Utilisation du score initial fourni
+      score: initialScore,
       responseValues: [],
     });
 
@@ -94,6 +96,7 @@ export class EvaluationResponseService {
     console.log('[SUBMIT RESPONSE] savedResponse ID:', savedResponse.id);
 
     let calculatedTotalScore = 0;
+    const aggregatedScoresByType: { [pointTypeId: number]: number } = {};
 
     if (
       answers &&
@@ -218,13 +221,41 @@ export class EvaluationResponseService {
         calculatedTotalScore.toFixed(2),
       );
 
-      // Mettre à jour uniquement le score de l'entité EvaluationResponse
       await this.responseRepo.update(savedResponse.id, {
         score: parseFloat(calculatedTotalScore.toFixed(2)),
       });
       console.log(
         '[SUBMIT RESPONSE] Entité EvaluationResponse mise à jour avec le score total (sans toucher aux autres champs).',
       );
+
+      if (evaluatorId === evaluateeId && session && evaluatee) {
+        for (const pointTypeIdStr in aggregatedScoresByType) {
+          const averageScore = aggregatedScoresByType[pointTypeIdStr];
+          const pointTypeId = parseInt(pointTypeIdStr);
+          const pointType = await this.performancePointTypeRepo.findOne({
+            where: { id: pointTypeId },
+          });
+
+          if (averageScore !== null && pointType) {
+            const selfEvaluationRecord =
+              await this.employeeSelfEvaluationService.create({
+                evaluatee: evaluatee,
+                period: session.startDate?.toISOString().split('T')[0] || 'N/A',
+                pointType: pointType,
+                score: averageScore,
+                evaluationSession: session,
+              });
+            console.log(
+              '[SUBMIT RESPONSE] Auto-évaluation enregistrée dans employee_self_evaluation pour le type:',
+              pointType.id,
+              'avec le score:',
+              averageScore,
+              'ID:',
+              selfEvaluationRecord.id,
+            );
+          }
+        }
+      }
 
       if (session.evaluatee) {
         const evaluateeIdForAggregate = session.evaluatee.id;
@@ -269,25 +300,28 @@ export class EvaluationResponseService {
           `[AGGREGATE - FIND CHANGES] Nombre de PerformancePointChanges trouvés pour l'évalué ${evaluateeIdForAggregate}: ${performancePointChangesForAggregate.filter((pc) => pc.responseValue?.evaluationResponse?.evaluatee?.id === evaluateeIdForAggregate).length}`,
         );
 
-        const aggregatedScores: {
+        const aggregatedScoresAggregate: {
           [pointTypeId: number]: { sum: number; count: number };
         } = {};
         performancePointChangesForAggregate.forEach((change) => {
           if (change.pointType?.id) {
-            if (!aggregatedScores[change.pointType.id]) {
-              aggregatedScores[change.pointType.id] = { sum: 0, count: 0 };
+            if (!aggregatedScoresAggregate[change.pointType.id]) {
+              aggregatedScoresAggregate[change.pointType.id] = {
+                sum: 0,
+                count: 0,
+              };
             }
-            aggregatedScores[change.pointType.id].sum += change.score;
-            aggregatedScores[change.pointType.id].count++;
+            aggregatedScoresAggregate[change.pointType.id].sum += change.score;
+            aggregatedScoresAggregate[change.pointType.id].count++;
           }
         });
         console.log(
           "[AGGREGATE - SCORES] Scores agrégés pour l'évalué ${evaluateeIdForAggregate}:",
-          aggregatedScores,
+          aggregatedScoresAggregate,
         );
 
-        for (const pointTypeId in aggregatedScores) {
-          const { sum, count } = aggregatedScores[pointTypeId];
+        for (const pointTypeId in aggregatedScoresAggregate) {
+          const { sum, count } = aggregatedScoresAggregate[pointTypeId];
           const averageScore = count > 0 ? sum / count : null;
           const currentPointTypeId = parseInt(pointTypeId);
 
@@ -350,8 +384,8 @@ export class EvaluationResponseService {
         'session',
         'session.form',
         'responseValues',
-        // 'responseValues.evaluationResponse', // NE PAS charger cette relation
-        // 'responseValues.evaluationResponse.session', // NE PAS charger cette relation
+        // 'responseValues.evaluationResponse',
+        // 'responseValues.evaluationResponse.session',
       ],
     });
     if (!loadedResponse) {

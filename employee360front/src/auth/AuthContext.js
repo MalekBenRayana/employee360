@@ -8,11 +8,13 @@ const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(localStorage.getItem("user_role") || null);
   const [userId, setUserId] = useState(localStorage.getItem("user_id") || null);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (token && (!role || !userId)) {
-      const fetchAndSetUserInfo = async () => {
+    const fetchAndSetUserInfo = async () => {
+      setAuthLoading(true);
+      if (token && (!role || !userId)) {
         try {
           const data = await fetchUserRole(token);
 
@@ -36,13 +38,15 @@ const AuthProvider = ({ children }) => {
           handleLogout();
         } finally {
           setLoading(false);
+          setAuthLoading(false);
         }
-      };
+      } else {
+        setLoading(false);
+        setAuthLoading(false);
+      }
+    };
 
-      fetchAndSetUserInfo();
-    } else {
-      setLoading(false);
-    }
+    fetchAndSetUserInfo();
   }, [token, role, userId]);
 
   const handleLogout = () => {
@@ -58,13 +62,14 @@ const AuthProvider = ({ children }) => {
       role,
       userId,
       loading,
+      authLoading, 
       error,
       setToken,
       setRole,
       setUserId,
       logout: handleLogout
     }}>
-      {children}
+      {!authLoading ? children : <div>Chargement des informations d'authentification...</div>}
     </AuthContext.Provider>
   );
 };

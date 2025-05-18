@@ -8,7 +8,7 @@ import { User } from '../user/user.entity';
 import { Project } from '../projects/project.entity';
 import { EvaluatorAssignment } from '../evaluator-assignment/evaluator-assignment.entity';
 import { EmailService } from '../email/email.service';
-import { NotificationService } from '../notification/notification.service'; // Importez le service de notification
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class EvaluationSessionService {
@@ -29,7 +29,7 @@ export class EvaluationSessionService {
     private readonly evaluatorAssignmentRepo: Repository<EvaluatorAssignment>,
 
     private readonly emailService: EmailService,
-    @Inject(NotificationService) // Injectez le service de notification
+    @Inject(NotificationService)
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -85,6 +85,38 @@ export class EvaluationSessionService {
     session.setEndDate?.();
     const savedSession = await this.evaluationSessionRepo.save(session);
 
+    const selfEvaluationLink = `http://localhost:3001/respond/${session.form.id}?sessionId=${savedSession.id}&evaluatorId=${evaluateeUser.id}`;
+    const selfEvaluationEmailSubject = `Auto-évaluation pour le projet ${project.project_name}`;
+    const selfEvaluationEmailText = `Bonjour ${evaluateeUser.username},\n\nVeuillez compléter votre auto-évaluation pour le projet "${project.project_name}" en utilisant le formulaire "${form.name}" via le lien suivant :\n\nLien : ${selfEvaluationLink}\n\nMerci de remplir cette évaluation dès que possible.\n\nCordialement,\nL’équipe d’évaluation.`;
+    const selfEvaluationEmailHtml = `
+      <p>Bonjour ${evaluateeUser.username},</p>
+      <p>Nous vous prions de bien vouloir compléter votre auto-évaluation pour le projet "<strong>${project.project_name}</strong>" en utilisant le formulaire "<strong>${form.name}</strong>".</p>
+      <p>Veuillez cliquer sur le lien suivant pour accéder au formulaire :</p>
+      <p><a href="${selfEvaluationLink}">${selfEvaluationLink}</a></p>
+      <p>Merci de compléter cette évaluation dans les plus brefs délais.</p>
+      <p>Cordialement,<br/>L’équipe d’évaluation</p>
+    `;
+
+    try {
+      await this.emailService.sendEmail(
+        evaluateeUser.email,
+        selfEvaluationEmailSubject,
+        selfEvaluationEmailText,
+        selfEvaluationEmailHtml,
+      );
+      console.log(`E-mail d'auto-évaluation envoyé à ${evaluateeUser.email}`);
+      const notificationMessageSelf = `Auto-évaluation disponible pour le projet "${project.project_name}". Cliquez ici pour y accéder: ${selfEvaluationLink}`;
+      await this.notificationService.notifyUser(
+        evaluateeUser.id,
+        notificationMessageSelf,
+      );
+    } catch (error) {
+      console.error(
+        `Erreur d’envoi de l’e-mail d'auto-évaluation à ${evaluateeUser.email}:`,
+        error,
+      );
+    }
+
     const evaluators = project.users.filter(
       (projectUser) => projectUser.id !== evaluateeUser.id,
     );
@@ -122,9 +154,11 @@ export class EvaluationSessionService {
         );
       }
 
-      // Envoyer la notification
-      const notificationMessage = `Nouvelle évaluation disponible pour ${evaluateeUser.username} sur le projet "${project.project_name}".`;
-      await this.notificationService.notifyUser(evaluator.id, notificationMessage);
+      const notificationMessage = `Nouvelle évaluation disponible pour ${evaluateeUser.username} sur le projet "${project.project_name}". Cliquez ici pour y accéder: ${evaluationLink}`;
+      await this.notificationService.notifyUser(
+        evaluator.id,
+        notificationMessage,
+      );
     }
 
     return { sessionId: savedSession.id, session: savedSession };
@@ -183,8 +217,11 @@ export class EvaluationSessionService {
           );
         }
 
-        const notificationMessage = `Nouvelle évaluation disponible pour ${session.evaluatee.username} sur le projet "${session.project.project_name}".`;
-        await this.notificationService.notifyUser(evaluatorId, notificationMessage);
+        const notificationMessage = `Nouvelle évaluation disponible pour ${session.evaluatee.username} sur le projet "${session.project.project_name}". Cliquez ici pour y accéder: ${evaluationLink}`;
+        await this.notificationService.notifyUser(
+          evaluatorId,
+          notificationMessage,
+        );
       }
     }
   }
@@ -259,5 +296,70 @@ export class EvaluationSessionService {
 
   async deleteSession(id: number): Promise<void> {
     await this.evaluationSessionRepo.delete(id);
+  }
+
+  async getEvaluationSessionsForEmployee(employeeId: number): Promise<{
+    toEvaluate: EvaluationSession[];
+    selfEvaluation: EvaluationSession[];
+  }> {
+    const employee = await this.userRepo.findOne({ where: { id: employeeId } });
+    if (!employee) {
+      throw new NotFoundException(`Employé avec l'ID ${employeeId} non trouvé`);
+    }
+
+    // Récupérer les sessions où l'employé est l'évaluateur (pour évaluer ses collègues)
+    const toEvaluate = await this.evaluationSessionRepo
+      .createQueryBuilder('session')
+      .leftJoin('session.evaluatorAssignments', 'assignment')
+      .leftJoin('assignment.evaluator', 'evaluator')
+      .leftJoinAndSelect('session.form', 'form')
+      .leftJoinAndSelect('session.evaluatee', 'evaluatee')
+      .leftJoinAndSelect('session.project', 'project')
+      .where('evaluator.id = :employeeId', { employeeId })
+      .getMany();
+
+    const selfEvaluation = await this.evaluationSessionRepo.find({
+      where: { evaluatee: { id: employeeId } },
+      relations: ['form', 'project'],
+    });
+
+    return { toEvaluate, selfEvaluation };
+  }
+
+  async getEvaluationSessionsAssignedToEmployee(
+    employeeId: number,
+  ): Promise<EvaluationSession[]> {
+    const employee = await this.userRepo.findOne({ where: { id: employeeId } });
+    if (!employee) {
+      throw new NotFoundException(`Employé avec l'ID ${employeeId} non trouvé`);
+    }
+
+    const assignedSessions = await this.evaluationSessionRepo
+      .createQueryBuilder('session')
+      .leftJoin('session.evaluatorAssignments', 'assignment')
+      .leftJoin('assignment.evaluator', 'evaluator')
+      .leftJoinAndSelect('session.form', 'form')
+      .leftJoinAndSelect('session.evaluatee', 'evaluatee')
+      .leftJoinAndSelect('session.project', 'project')
+      .where('evaluator.id = :employeeId', { employeeId })
+      .getMany();
+
+    return assignedSessions;
+  }
+
+  async getSelfEvaluationSessionsForEmployee(
+    employeeId: number,
+  ): Promise<EvaluationSession[]> {
+    const employee = await this.userRepo.findOne({ where: { id: employeeId } });
+    if (!employee) {
+      throw new NotFoundException(`Employé avec l'ID ${employeeId} non trouvé`);
+    }
+
+    const selfEvaluationSessions = await this.evaluationSessionRepo.find({
+      where: { evaluatee: { id: employeeId } },
+      relations: ['form', 'project'],
+    });
+
+    return selfEvaluationSessions;
   }
 }

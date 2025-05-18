@@ -1,4 +1,3 @@
-// dashboardService.js
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -48,7 +47,7 @@ const dashboardService = {
     getEvaluateeStats,
     getEvaluateeScoreHistory,
     getProjectPerformanceScores,
-    getEvaluateeFullHistory, // Ajout de la nouvelle fonction
+    getEvaluateeFullHistory,
 };
 
 export default dashboardService;

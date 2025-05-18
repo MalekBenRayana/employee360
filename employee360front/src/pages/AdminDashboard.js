@@ -246,7 +246,6 @@ function AdminDashboard() {
                         fontWeight: 600
                     }}>Tableau de Bord Admin</Typography>
 
-                    {/* Section des indicateurs clés améliorée */}
                     <Grid container spacing={4} mb={4}>
                         <Grid item xs={12} sm={6} md={3}>
                             <KeyIndicatorCard
@@ -275,9 +274,7 @@ function AdminDashboard() {
                         
                     </Grid>
 
-                    {/* Section des graphiques améliorée (ordonnée par importance) */}
                     <Grid container spacing={4}>
-                        {/* Tendance du Score Moyen Global (Graphique de ligne - Important) */}
                         {averageOverallScoreTrend && averageOverallScoreTrend.length > 0 && (
                             <Grid item xs={12} md={6}>
                                 <ChartCard title="Tendance du Score Moyen Global">
@@ -287,7 +284,7 @@ function AdminDashboard() {
                                             <XAxis
                                                 dataKey="period"
                                                 style={chartStyle}
-                                                tickLine={false} // Remove axis ticks
+                                                tickLine={false}
                                                 axisLine={false}
                                             />
                                             <YAxis
@@ -341,7 +338,7 @@ function AdminDashboard() {
                             </Grid>
                         )}
 
-                        {/* Tendance des Évaluations (Graphique à barres - Important) */}
+                        {/* Tendance des Évaluations (Graphique à barres - Important)
                         {evaluationsTrend && evaluationsTrend.length > 0 && (
                             <Grid item xs={12} md={6}>
                                 <ChartCard title="Tendance des Évaluations">
@@ -389,7 +386,7 @@ function AdminDashboard() {
                                     </ResponsiveContainer>
                                 </ChartCard>
                             </Grid>
-                        )}
+                        )} */}
 
                         {/* Scores Moyens par Type de Point (Période Actuelle) (Graphique à barres) */}
                         {averageScoresByPerformancePoint && Object.keys(averageScoresByPerformancePoint).length > 0 && (
@@ -437,7 +434,6 @@ function AdminDashboard() {
                             </Grid>
                         )}
 
-                        {/* Distribution des Scores des Employés (Période Actuelle) (Graphique à barres) */}
                         {employeeScoreDistribution && employeeScoreDistribution.length > 0 && (
                             <Grid item xs={12} md={6}>
                                 <ChartCard title="Distribution des Scores des Employés (Période Actuelle)">
@@ -483,7 +479,6 @@ function AdminDashboard() {
                             </Grid>
                         )}
 
-                        {/* Score Moyen par Type de Point (Toutes Périodes) (Graphique à barres) */}
                         {performancePointScoreTrend && performancePointScoreTrend.length > 0 && (
                             <Grid item xs={12} md={6}>
                                 <ChartCard title="Score Moyen par Type de Point (Toutes Périodes)">

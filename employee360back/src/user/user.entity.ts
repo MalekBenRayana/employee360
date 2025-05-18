@@ -14,7 +14,9 @@ import { ProjectAssignmentLog } from 'src/project-assignment-logs/project-assign
 import { EvaluationSession } from 'src/evaluation-session/evaluation-session.entity';
 import { EvaluatorAssignment } from 'src/evaluator-assignment/evaluator-assignment.entity';
 import { EvaluationResponse } from 'src/evaluation-response/evaluation-response.entity';
-import { EmployeePointPeriodAggregate } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.entity'; // Importez l'entité
+import { EmployeePointPeriodAggregate } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.entity';
+import { EmployeeSelfEvaluation } from 'src/employee-self-evaluation/employee-self-evaluation.entity';
+import { TimeTracking } from 'src/time-tracking/time-tracking.entity'; // Importez l'entité TimeTracking
 
 @Entity()
 export class User {
@@ -84,11 +86,9 @@ export class User {
   @OneToMany(() => ProjectAssignmentLog, (log) => log.user)
   assignmentLogs: ProjectAssignmentLog[];
 
-  // Utilisateur en tant qu'évalué
   @OneToMany(() => EvaluationSession, (session) => session.evaluatee)
   evaluationSessionsAsEvaluatee: EvaluationSession[];
 
-  // Utilisateur en tant qu'évaluateur (via l'entité de liaison EvaluatorAssignment)
   @OneToMany(() => EvaluatorAssignment, (assignment) => assignment.evaluator)
   assignedEvaluations: EvaluatorAssignment[];
 
@@ -103,4 +103,13 @@ export class User {
     (aggregate) => aggregate.evaluatee,
   )
   pointPeriodAggregates: EmployeePointPeriodAggregate[];
+
+  @OneToMany(
+    () => EmployeeSelfEvaluation,
+    (selfEvaluation) => selfEvaluation.evaluatee,
+  )
+  selfEvaluations: EmployeeSelfEvaluation[];
+
+  @OneToMany(() => TimeTracking, (timeTracking) => timeTracking.user)
+  timeTrackings: TimeTracking[];
 }

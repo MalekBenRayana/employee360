@@ -9,7 +9,7 @@ import backgroundImage from '../assets/images/img.jpg';
 import { loginUser, fetchUserRole } from "../services/authService";
 
 const Login = () => {
-  const { setToken, setRole, error } = useAuth();
+  const { setToken, setRole, setUserId, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -28,8 +28,13 @@ const Login = () => {
 
         if (roleData?.roles?.length > 0) {
           const userRole = roleData.roles[0];
+          const userIdFromData = roleData.id;
+          
+
           setRole(userRole);
+          setUserId(userIdFromData);
           localStorage.setItem('user_role', userRole);
+          localStorage.setItem('user_id', userIdFromData);
 
           switch (userRole) {
             case 'admin':

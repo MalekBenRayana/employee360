@@ -328,4 +328,23 @@ export class ProjectsService {
       }),
     }));
   }
+
+  async getManagerProjectsList(managerId: number): Promise<Project[]> {
+    // 1. Vérifier si le manager existe
+    const manager = await this.userRepository.findOne({ where: { id: managerId } });
+    if (!manager) {
+      throw new NotFoundException(`Manager avec l'ID ${managerId} non trouvé.`);
+    }
+
+    // 2. Récupérer tous les projets où le manager est assigné
+    const projects = await this.projectRepository.find({
+      where: { manager: { id: managerId } },
+      relations: ['departments', 'users'], // Vous pouvez inclure d'autres relations si nécessaire
+    });
+
+    return projects;
+  }
+
+
+
 }

@@ -8,6 +8,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([PerformancePointChange])],
   providers: [PerformancePointChangeService],
   controllers: [PerformancePointChangeController],
-  exports: [PerformancePointChangeService, TypeOrmModule],
+  exports: [
+    PerformancePointChangeService,
+    TypeOrmModule.forFeature([PerformancePointChange]),
+  ],
 })
 export class PerformancePointChangeModule {}

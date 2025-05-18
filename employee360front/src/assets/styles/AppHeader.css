@@ -1,0 +1,54 @@
+.app-header {
+    background-color: #f8f9fa; /* Couleur de fond claire */
+    color: #333; /* Couleur de texte sombre */
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky; /* Pour que l'en-tête reste en haut lors du défilement */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100; /* Pour être au-dessus du contenu */
+  }
+  
+  .app-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacement entre les éléments de l'en-tête */
+  }
+  
+  .notification-icon-button {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 8px;
+    border-radius: 5px;
+    position: relative; /* Pour positionner le compteur de notifications */
+    transition: color 0.2s ease;
+  }
+  
+  .notification-icon-button:hover {
+    color: #007bff;
+  }
+  
+  /* Si vous voulez afficher le nombre de notifications non lues sur l'icône */
+  /* .notification-icon-button .notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 0.7rem;
+    line-height: 1;
+  } */

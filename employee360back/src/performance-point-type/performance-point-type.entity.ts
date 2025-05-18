@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
 import { EmployeePointPeriodAggregate } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.entity';
+import { EmployeeSelfEvaluation } from 'src/employee-self-evaluation/employee-self-evaluation.entity';
 
 @Entity('performance_point_types')
 export class PerformancePointType {
@@ -24,4 +25,10 @@ export class PerformancePointType {
     (aggregate) => aggregate.pointType,
   )
   employeePointPeriodAggregates: EmployeePointPeriodAggregate[];
+
+  @OneToMany(
+    () => EmployeeSelfEvaluation,
+    (selfEvaluation) => selfEvaluation.pointType,
+  )
+  selfEvaluations: EmployeeSelfEvaluation[];
 }

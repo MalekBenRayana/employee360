@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { EvaluationSessionService } from './evaluation-session.service';
 import { EvaluationSession } from './evaluation-session.entity';
@@ -27,30 +28,58 @@ export class EvaluationSessionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<EvaluationSession> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<EvaluationSession> {
     return this.service.findOne(id);
   }
 
   @Put(':id/start')
-  startSession(@Param('id') id: number): Promise<EvaluationSession> {
+  startSession(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<EvaluationSession> {
     return this.service.startSession(id);
   }
 
   @Put(':id/close')
-  closeSession(@Param('id') id: number): Promise<EvaluationSession> {
+  closeSession(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<EvaluationSession> {
     return this.service.closeSession(id);
   }
 
   @Put(':id/status')
   updateStatus(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body('status') status: string,
   ): Promise<EvaluationSession> {
     return this.service.updateStatus(id, status);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number): Promise<void> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.service.deleteSession(id);
+  }
+
+  @Get('employee/:employeeId')
+  async getEmployeeEvaluationSessions(
+    @Param('employeeId', ParseIntPipe) employeeId: number,
+  ): Promise<{
+    toEvaluate: EvaluationSession[];
+    selfEvaluation: EvaluationSession[];
+  }> {
+    return this.service.getEvaluationSessionsForEmployee(employeeId);
+  }
+
+  @Get('assigned/:employeeId')
+  async getAssignedEvaluationSessions(
+    @Param('employeeId', ParseIntPipe) employeeId: number,
+  ): Promise<EvaluationSession[]> {
+    return this.service.getEvaluationSessionsAssignedToEmployee(employeeId);
+  }
+
+  @Get('self/:employeeId')
+  async getSelfEvaluationSessions(
+    @Param('employeeId', ParseIntPipe) employeeId: number,
+  ): Promise<EvaluationSession[]> {
+    return this.service.getSelfEvaluationSessionsForEmployee(employeeId);
   }
 }

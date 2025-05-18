@@ -171,7 +171,6 @@ function EmployeeHistory() {
         },
     };
 
-    // Préparer les données pour le graphique des scores par point dans chaque projet
     const projects = [...new Set(projectPerformanceScores.map(item => item.projectName))];
     const performancePointsNames = [...new Set(projectPerformanceScores.map(item => item.performancePointName).filter(name => name))];
     const projectPerformanceChartData = {
@@ -182,9 +181,9 @@ function EmployeeHistory() {
                 const scores = projectPerformanceScores
                     .filter(item => item.projectName === projectName && item.performancePointName === pointName)
                     .map(item => item.score);
-                return scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null; // Calculer le score moyen pour ce point dans ce projet
+                return scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null; 
             }),
-            backgroundColor: performancePointsNames.indexOf(pointName) < 7 // Limiter les couleurs pour l'exemple
+            backgroundColor: performancePointsNames.indexOf(pointName) < 7
                 ? [
                     'rgba(255, 99, 132, 0.7)',
                     'rgba(54, 162, 235, 0.7)',
@@ -194,7 +193,7 @@ function EmployeeHistory() {
                     'rgba(255, 159, 64, 0.7)',
                     'rgba(128, 0, 128, 0.7)',
                 ][performancePointsNames.indexOf(pointName)]
-                : 'rgba(0, 0, 0, 0.2)', // Couleur par défaut si plus de 7 points
+                : 'rgba(0, 0, 0, 0.2)',
         })),
     };
 

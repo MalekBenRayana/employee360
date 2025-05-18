@@ -39,12 +39,16 @@ export class NotificationService {
 
   // Envoie à un seul utilisateur
   async notifyUser(userId: number, message: string): Promise<Notification> {
-    this.logger.log(`[NotificationService] notifyUser appelé pour l'utilisateur ${userId} avec le message : ${message}`);
+    this.logger.log(
+      `[NotificationService] notifyUser appelé pour l'utilisateur ${userId} avec le message : ${message}`,
+    );
 
     const user = await this.userRepository.findOneBy({ id: userId });
     this.logger.log(`[NotificationService] Utilisateur trouvé :`, user);
     if (!user) {
-      this.logger.error(`[NotificationService] Utilisateur avec l'ID ${userId} non trouvé.`);
+      this.logger.error(
+        `[NotificationService] Utilisateur avec l'ID ${userId} non trouvé.`,
+      );
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
@@ -55,14 +59,16 @@ export class NotificationService {
     this.logger.log(`[NotificationService] Notification créée :`, notification);
 
     const savedNotification = await this.notificationRepo.save(notification);
-    this.logger.log(`[NotificationService] Notification sauvegardée :`, savedNotification);
+    this.logger.log(
+      `[NotificationService] Notification sauvegardée :`,
+      savedNotification,
+    );
 
     this.notificationGateway.sendNotificationToUser(userId, message);
 
     return savedNotification;
   }
 
-  // Envoie à tous les utilisateurs
   async notifyAllUsers(message: string): Promise<Notification[]> {
     const notifications: Notification[] = [];
     const users = await this.getAllUsers();
@@ -90,11 +96,17 @@ export class NotificationService {
     return this.notificationRepo.find({
       where: { recipient: { id: userId } },
       order: { createdAt: 'DESC' },
+      // Vous pouvez choisir de ne récupérer que les notifications non lues ici si nécessaire
+      // where: { recipient: { id: userId }, isRead: false },
+      relations: ['recipient'], // Assurez-vous de charger la relation recipient si vous l'utilisez dans votre frontend
     });
   }
 
   async markAsRead(id: number): Promise<Notification> {
-    const notification = await this.notificationRepo.findOneBy({ id });
+    const notification = await this.notificationRepo.findOne({
+      where: { id },
+      relations: ['recipient'],
+    }); // Charger la relation si nécessaire
 
     if (!notification) {
       throw new NotFoundException(`Notification with ID ${id} not found`);

@@ -40,11 +40,11 @@ const CreatePerformancePointType = ({ initialFormData, editingId, onCreate, onUp
 
         if (editingId) {
             if (onUpdate) {
-                onUpdate(e); // Le composant parent gère la mise à jour
+                onUpdate(e);
             }
         } else {
             if (onCreate) {
-                onCreate(formData); // Le composant parent gère la création
+                onCreate(formData);
             }
         }
     };

@@ -257,7 +257,6 @@ const EmployeeDashboard = () => {
                 <div className="container-fluid py-4">
                     <h1 className="mb-4" style={{ color: '#333' }}>Tableau de Bord de {employeeName}</h1>
 
-                    {/* Section des informations clés (en haut) */}
                     <div className="row mb-4">
                         <div className="col-md-4">
                             <InfoCard
@@ -275,10 +274,8 @@ const EmployeeDashboard = () => {
                                 />
                             </div>
                         )}
-                        {/* Tu pourrais ajouter d'autres cartes d'informations clés ici */}
                     </div>
 
-                    {/* Section des graphiques */}
                     <div className="row">
                         {scoreHistory?.dates?.length > 0 && scoreHistory?.scores?.length > 0 && (
                             <div className="col-md-6 mb-4">
@@ -295,7 +292,7 @@ const EmployeeDashboard = () => {
 
                     <div className="row">
                         {projectPerformanceData.length > 0 && (
-                            <div className="col-md-12 mb-4"> {/* Prend plus de largeur car potentiellement plus complexe */}
+                            <div className="col-md-12 mb-4">
                                 <ProjectPerformanceChart data={projectPerformanceData} />
                             </div>
                         )}

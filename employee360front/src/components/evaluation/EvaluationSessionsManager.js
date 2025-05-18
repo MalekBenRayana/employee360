@@ -127,11 +127,9 @@ const EvaluationSessionsManager = () => {
                                         <thead>
                                             <tr>
                                                 <th>Formulaire</th>
-                                                <th>Évalué</th>
                                                 <th>Évaluateur(s)</th>
                                                 <th>Projet</th>
                                                 <th>Statut</th>
-                                                <th>Date de Début</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -139,7 +137,6 @@ const EvaluationSessionsManager = () => {
                                             {sessions.map(session => (
                                                 <tr key={session.id}>
                                                     <td>{session.form ? session.form.name : 'N/A'}</td>
-                                                    <td>{session.user ? session.user.username : 'N/A'}</td>
                                                     <td>
                                                         {session.evaluatorAssignments && Array.isArray(session.evaluatorAssignments)
                                                             ? session.evaluatorAssignments
@@ -153,7 +150,6 @@ const EvaluationSessionsManager = () => {
                                                             {session.status}
                                                         </span>
                                                     </td>
-                                                    <td>{new Date(session.startDate).toLocaleDateString()}</td>
                                                     <td>
                                                         <Link to={`/evaluation-sessions/edit/${session.id}`} className="btn btn-sm btn-outline-primary rounded-pill me-2" title="Modifier">
                                                             <FaEdit />

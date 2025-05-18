@@ -23,6 +23,9 @@ import { PerformancePointChangeModule } from './performance-point-change/perform
 import { EmployeePointPeriodAggregateModule } from './employee-point-period-aggregate/employee-point-period-aggregate.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
+import { EmployeeSelfEvaluationModule } from './employee-self-evaluation/employee-self-evaluation.module';
+import { TimeTrackingModule } from './time-tracking/time-tracking.module';
+import { TaskEstimationModule } from './tasks-estimations/tasks-estimations.module';
 
 @Module({
   imports: [
@@ -64,6 +67,9 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
     EvaluatorAssignmentModule,
     DashboardModule,
     AdminDashboardModule,
+    EmployeeSelfEvaluationModule,
+    TimeTrackingModule,
+    TaskEstimationModule,
   ],
 })
 export class AppModule {}

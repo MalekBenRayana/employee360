@@ -22,7 +22,7 @@ export class NotificationGateway
   @WebSocketServer()
   server: Server;
 
-  private connectedClients: Map<string, number> = new Map(); // Stocke le socket ID et l'userId
+  private connectedClients: Map<string, number> = new Map();
   private readonly logger = new Logger(NotificationGateway.name);
 
   constructor(
@@ -32,12 +32,14 @@ export class NotificationGateway
 
   handleConnection(client: Socket) {
     this.logger.log(`✅ Client connecté: ${client.id}`);
-    const userId = client.handshake.query.userId as string; // Récupère l'userId comme string
+    const userId = client.handshake.query.userId as string;
 
     if (userId) {
-      this.connectedClients.set(client.id, parseInt(userId, 10)); // Associe le socket ID à l'userId
+      this.connectedClients.set(client.id, parseInt(userId, 10));
       client.join(`user-${userId}`);
-      this.logger.log(`🔗 Client ${client.id} (user ${userId}) a rejoint la room user-${userId}`);
+      this.logger.log(
+        `🔗 Client ${client.id} (user ${userId}) a rejoint la room user-${userId}`,
+      );
     } else {
       this.logger.warn(`⚠️ Client ${client.id} connecté sans userId.`);
     }
@@ -45,7 +47,9 @@ export class NotificationGateway
 
   handleDisconnect(client: Socket) {
     const userId = this.connectedClients.get(client.id);
-    this.logger.log(`❌ Client déconnecté: ${client.id}${userId ? ` (user ${userId})` : ''}`);
+    this.logger.log(
+      `❌ Client déconnecté: ${client.id}${userId ? ` (user ${userId})` : ''}`,
+    );
     this.connectedClients.delete(client.id);
   }
 
@@ -53,7 +57,9 @@ export class NotificationGateway
     const roomName = `user-${userId}`;
     if (this.server.sockets.adapter.rooms.get(roomName)) {
       this.server.to(roomName).emit('newNotification', { message });
-      this.logger.log(`📩 Notification envoyée à ${roomName} (user ${userId}): ${message}`);
+      this.logger.log(
+        `📩 Notification envoyée à ${roomName} (user ${userId}): ${message}`,
+      );
     } else {
       this.logger.error(
         `❌ Room ${roomName} introuvable pour l'utilisateur ${userId}`,
@@ -69,7 +75,9 @@ export class NotificationGateway
   @SubscribeMessage('joinUserRoom')
   async handleJoinRoom(@MessageBody() userId: number, client: Socket) {
     if (!client || !client.id) {
-      this.logger.error('❌ client ou client.id est undefined dans handleJoinRoom');
+      this.logger.error(
+        '❌ client ou client.id est undefined dans handleJoinRoom',
+      );
       return;
     }
 

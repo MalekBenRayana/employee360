@@ -188,15 +188,14 @@ const getEmployeeHistory = async (employeeId) => {
 
 const getTotalEmployeesWithDetails = async () => {
   try {
-    const response = await api.get('/employees'); // Supposons que cet endpoint renvoie la liste des employés avec les détails
-    return response.data; // Assurez-vous que la structure de la réponse correspond à vos besoins (un tableau d'objets avec id, username, email, etc.)
+    const response = await api.get('/employees');
+    return response.data; 
   } catch (error) {
     console.error("Erreur lors de la récupération des détails des employés:", error);
     throw error;
   }
 };
 
-// NOUVEL ENDPOINT ICI
 const getScorePerProjectByUser = async (evaluateeId) => {
   try {
     const response = await api.get(`/evaluatee/${evaluateeId}/project-scores`);
@@ -213,6 +212,18 @@ const getEmployeeProjectPerformanceScores = async (employeeId) => {
     return response.data;
   } catch (error) {
     console.error(`Erreur lors de la récupération des scores par projet et point pour l'employé ${employeeId}:`, error);
+    throw error;
+  }
+};
+
+const getTeamEmployeeStatsForProject = async (projectId, managerId) => {
+  try {
+    const response = await api.get(`/projects/${projectId}/team-stats`, {
+      params: { managerId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des statistiques de l'équipe pour le projet ${projectId}:`, error);
     throw error;
   }
 };
@@ -239,6 +250,7 @@ const adminDashboardService = {
   getTotalEmployeesWithDetails,
   getScorePerProjectByUser,
   getEmployeeProjectPerformanceScores,
+  getTeamEmployeeStatsForProject,
 };
 
 export default adminDashboardService;

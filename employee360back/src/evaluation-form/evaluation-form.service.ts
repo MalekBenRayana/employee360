@@ -33,8 +33,7 @@ export class EvaluationFormService {
         }));
         return { ...question, options: updatedOptions };
       }
-      // Pour le type 'scale', les min et max sont déjà des nombres.
-      // La valeur de la réponse sera directement le nombre sélectionné.
+
       return question;
     });
 
@@ -100,7 +99,7 @@ export class EvaluationFormService {
 
     const session = await this.evaluationSessionRepository.findOne({
       where: { id: sessionId },
-      relations: ['evaluatee'],
+      relations: ['evaluatee', 'form'],
     });
 
     if (!session || !session.evaluatee) {
@@ -111,24 +110,35 @@ export class EvaluationFormService {
 
     const evaluateeId = session.evaluatee.id;
 
-    const assignment = await this.evaluatorAssignmentRepository.findOne({
-      where: {
-        evaluationSession: { id: sessionId },
-        evaluator: { id: evaluatorId },
-      },
-      relations: ['evaluationSession', 'evaluator', 'evaluationSession.form'],
-    });
+    const isSelfEvaluation = evaluatorId === evaluateeId;
+    let assignment;
 
-    if (!assignment) {
-      throw new NotFoundException(
-        `L'évaluateur avec l'ID ${evaluatorId} n'est pas assigné à la session d'évaluation avec l'ID ${sessionId} pour ce formulaire.`,
-      );
-    }
+    if (!isSelfEvaluation) {
+      assignment = await this.evaluatorAssignmentRepository.findOne({
+        where: {
+          evaluationSession: { id: sessionId },
+          evaluator: { id: evaluatorId },
+        },
+        relations: ['evaluationSession', 'evaluator', 'evaluationSession.form'],
+      });
 
-    if (assignment.evaluationSession?.form?.id !== formId) {
-      throw new NotFoundException(
-        `La session d'évaluation avec l'ID ${sessionId} n'est pas associée au formulaire avec l'ID ${formId}.`,
-      );
+      if (!assignment) {
+        throw new NotFoundException(
+          `L'évaluateur avec l'ID ${evaluatorId} n'est pas assigné à la session d'évaluation avec l'ID ${sessionId} pour ce formulaire.`,
+        );
+      }
+
+      if (assignment.evaluationSession?.form?.id !== formId) {
+        throw new NotFoundException(
+          `La session d'évaluation avec l'ID ${sessionId} n'est pas associée au formulaire avec l'ID ${formId}.`,
+        );
+      }
+    } else {
+      if (session.form?.id !== formId) {
+        throw new NotFoundException(
+          `La session d'évaluation avec l'ID ${sessionId} n'est pas associée au formulaire avec l'ID ${formId}.`,
+        );
+      }
     }
 
     return { ...form, evaluateeId };

@@ -88,11 +88,11 @@ export class UserController {
 
   @Get('role')
   @UseGuards(JwtAuthGuard)
-  async getUserRoles(@Request() req): Promise<{ roles: string[] }> {
+  async getUserRoles(@Request() req): Promise<{ roles: string[]; id: number }> {
     try {
       const userId = req.user.userId;
       const roles = await this.userService.getUserRoles(userId);
-      return { roles };
+      return { roles, id: userId }; // Inclure l'ID de l'utilisateur dans la réponse
     } catch (error) {
       this.logger.error(
         `Erreur lors de la récupération des rôles pour l'utilisateur ID ${req.user.userId}`,
@@ -151,7 +151,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles(Role.Admin)
   async delete(@Param('id') id: number): Promise<void> {
     try {

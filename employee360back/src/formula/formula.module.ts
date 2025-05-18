@@ -20,6 +20,6 @@ import { PerformancePointTypeService } from 'src/performance-point-type/performa
     PerformancePointTypeService,
   ],
   controllers: [FormulaController],
-  exports: [FormulaService],
+  exports: [FormulaService, TypeOrmModule.forFeature([Formula])],
 })
 export class FormulaModule {}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import Profile from "./pages/Profile";
@@ -20,8 +20,9 @@ import EvaluationResponseDetail from "./components/evaluation/EvaluationResponse
 import EvaluationFormResponder from "./components/evaluation/EvaluationFormResponder";
 import EvaluationSessionCreator from "./components/evaluation/EvaluationSessionCreator";
 import EvaluationSessionsManager from "./components/evaluation/EvaluationSessionsManager";
-import PerformancePointsManager from "./components/evaluation/PerformancePointsManager"; // Importez PerformancePointsManager
-
+import PerformancePointsManager from "./components/evaluation/PerformancePointsManager";
+import AssignedEvaluationsView from "./components/evaluation/AssignedEvaluationsView";
+import SelfEvaluationView from "./components/evaluation/SelfEvaluationView";
 
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { LayoutProvider } from "./contexts/LayoutContext";
@@ -33,12 +34,25 @@ import 'react-toastify/dist/ReactToastify.css';
 import FormulaManager from './components/evaluation/FormulaManager';
 import GestionPersonnel from './pages/GestionPersonnel';
 import EmployeeHistory from './components/EmployeeHistory';
+import DeplacementsAdmin from "./components/time-tracking-admin/Deplacements";
+import AutorisationsRetardAdmin from "./components/time-tracking-admin/AutorisationsRetard";
+import CongesAdmin from "./components/time-tracking-admin/Conges";
+import SuiviRetardsEmployee from "./components/time-tracking-employee/SuiviRetards";
+import CongesEmployee from "./components/time-tracking-employee/CongesEmp";
+import DeplacementsEmployee from "./components/time-tracking-employee/DeplacementsEmp";
+import AppHeader from './components/AppHeader';
+import ManagerProjectDetails from "./pages/ManagerProjectDetails"; // Importez le nouveau composant
 
 const App = () => {
+  const location = useLocation();
+  const shouldShowHeader = location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/reset-password';
+
   return (
     <AuthProvider>
       <NotificationProvider>
         <LayoutProvider>
+          {shouldShowHeader && <AppHeader />}
+
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -87,14 +101,30 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-<Route
-  path="/employee-dashboard"
-  element={
-    <ProtectedRoute roleRequired="employee">
-      <EmployeeDashboard />
-    </ProtectedRoute>
-  }
-/>
+            <Route
+              path="/employee-dashboard"
+              element={
+                <ProtectedRoute roleRequired="employee">
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assigned-evaluations"
+              element={
+                <ProtectedRoute roleRequired="employee">
+                  <AssignedEvaluationsView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/self-evaluation"
+              element={
+                <ProtectedRoute roleRequired="employee">
+                  <SelfEvaluationView />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/manager-dashboard"
               element={
@@ -120,11 +150,21 @@ const App = () => {
               }
             />
 
+            {/* Utilisez ManagerProjectDetails pour les détails des projets pour les managers */}
+            <Route
+              path="/projects/:projectId"
+              element={
+                <ProtectedRoute roleRequired="manager">
+                  <ManagerProjectDetails />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/project-details/:projectId"
               element={
                 <ProtectedRoute roleRequired="admin">
-                  <ProjectDetails />
+                  <ProjectDetails /> {/* Vous pouvez toujours garder cette route pour les admins */}
                 </ProtectedRoute>
               }
             />
@@ -138,7 +178,6 @@ const App = () => {
               }
             />
 
-            {/* Routes pour la gestion des formulaires d'évaluation */}
             <Route
               path="/evaluation-forms"
               element={
@@ -199,7 +238,6 @@ const App = () => {
               }
             />
 
-            {/* Route pour la gestion des sessions d'évaluation */}
             <Route
               path="/evaluation-sessions"
               element={
@@ -217,7 +255,7 @@ const App = () => {
               }
             />
 
-        <Route
+            <Route
               path="/formules"
               element={
                 <ProtectedRoute>
@@ -235,10 +273,25 @@ const App = () => {
               }
             />
 
+            <Route
+              path="/admin/retards"
+              element={<ProtectedRoute roleRequired="admin"><AutorisationsRetardAdmin /></ProtectedRoute>} />
+            <Route path="/admin/conges" element={<ProtectedRoute roleRequired="admin"><CongesAdmin /></ProtectedRoute>} />
+            <Route path="/admin/deplacements" element={<ProtectedRoute roleRequired="admin"><DeplacementsAdmin /></ProtectedRoute>} />
+
+            <Route
+              path="/employee/retards"
+              element={<ProtectedRoute roleRequired="employee"><SuiviRetardsEmployee /></ProtectedRoute>} />
+            <Route
+              path="/employee/conges"
+              element={<ProtectedRoute roleRequired="employee"><CongesEmployee /></ProtectedRoute>} />
+            <Route
+              path="/employee/deplacements"
+              element={<ProtectedRoute roleRequired="employee"><DeplacementsEmployee /></ProtectedRoute>} />
+
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>
           <ToastContainer position="top-right" autoClose={3000} />
-
         </LayoutProvider>
       </NotificationProvider>
     </AuthProvider>

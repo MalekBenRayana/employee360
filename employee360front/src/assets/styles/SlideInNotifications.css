@@ -1,115 +1,180 @@
-.slide-in-notifications {
-    position: fixed; /* Ou absolute selon le contexte */
-    top: 0;
-    right: -300px; /* Initialement caché à droite */
-    width: 300px;
-    height: 100vh;
+.slide-in-notifications-wrapper {
+    position: fixed;
+    top: 60px; /* Ajustez selon la hauteur de votre en-tête */
+    right: 20px;
+    width: 380px;
+    max-height: calc(100vh - 80px);
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1001;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .slide-in-notifications-wrapper.open {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .notifications-header {
     background-color: #f8f9fa;
     color: #333;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
-    z-index: 1002; /* Au-dessus du sidebar */
-    padding: 20px;
-    /* Modifier la propriété overflow-y */
-    overflow-y: scroll; /* Affiche la barre de défilement uniquement si le contenu dépasse */
-}
-
-.slide-in-notifications.open {
-    transform: translateX(-300px); /* Faire glisser vers la gauche pour afficher */
-}
-
-.slide-in-notifications h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-.slide-in-notifications .notification-list {
-    /* Styles pour la liste des notifications (similaires à ceux du modal) */
-    max-height: calc(100vh - 100px); /* Ajuster la hauteur max pour laisser de l'espace pour le titre et le bouton */
-    overflow-y: auto; /* Activer le défilement *à l'intérieur* de la liste si elle devient trop longue */
-}
-
-.slide-in-notifications .notification-item {
-    padding: 10px 0;
-}
-
-.slide-in-notifications .notification-item strong {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.slide-in-notifications .no-notification {
-    color: #777;
-    font-style: italic;
-}
-
-.slide-in-notifications button {
-    margin-top: 15px;
-}
-
-/* SlideInNotifications.css */
-.slide-in-notifications {
-    /* ... vos styles existants ... */
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Ajouter l'opacité à la transition */
-    opacity: 0; /* Initialement transparent */
-}
-
-.slide-in-notifications.open {
-    transform: translateX(-300px);
-    opacity: 1; /* Rendre visible lors de l'ouverture */
-}
-
-.slide-in-notifications .notifications-header {
+    padding: 18px 22px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.slide-in-notifications .close-button {
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .notifications-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .mark-all-as-read-button {
+    background: none;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 10px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1.2em;
-    color: #555;
-}
-
-.slide-in-notifications .close-button:hover {
-    color: #333;
-}
-
-.slide-in-notifications .notification-item {
-    padding: 15px 0; /* Augmenter le padding pour plus d'espace */
-    border-bottom: 1px solid #f0f0f0; /* Bordure plus claire */
-    background-color: #fff;
-    color: #333;
-    border-radius: 4px; /* Bords arrondis subtils */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Ombre légère */
-}
-
-.slide-in-notifications .notification-item:last-child {
-    border-bottom: none;
-}
-
-.slide-in-notifications .notification-item strong {
-    font-weight: 600; /* Gras plus prononcé */
-    margin-right: 8px;
-    color: #2c3e50; /* Couleur de texte plus foncée */
-}
-
-.slide-in-notifications .notification-item > div {
-    margin-bottom: 5px;
-}
-
-.slide-in-notifications .notification-item hr {
+    font-size: 0.9rem;
+    outline: none;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .mark-all-as-read-button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .close-button {
+    background: none;
     border: none;
-    border-top: 1px solid #ddd;
-    margin: 10px 0;
-}
-
-.slide-in-notifications .no-notification {
-    color: #999;
-    font-style: italic;
-    padding: 20px 0;
+    color: #777;
+    font-size: 1.2rem;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.2s ease;
+  }
+  
+  .close-button:hover {
+    color: #333;
+  }
+  
+  .notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    max-height: calc(100% - 60px); /* Ajustez selon la hauteur de l'en-tête */
+  }
+  
+  .notification-item {
+    padding: 18px 22px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: flex-start;
+    transition: background-color 0.15s ease-in-out;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+  
+  .notification-item.unread-item {
+    background-color: #f9faff;
+    border-left: 4px solid #007bff;
+  }
+  
+  .notification-icon-wrapper {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .notification-icon {
+    /* Styles de base pour les icônes */
+  }
+  
+  .notification-icon.info {
+    color: #17a2b8;
+  }
+  
+  .notification-icon.success {
+    color: #28a745;
+  }
+  
+  .notification-icon.warning {
+    color: #ffc107;
+  }
+  
+  .notification-content {
+    flex-grow: 1;
+  }
+  
+  .notification-message {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.5;
+  }
+  
+  .notification-meta {
+    font-size: 0.85rem;
+    color: #777;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .notification-date {
+    margin-right: 10px;
+  }
+  
+  .mark-as-read-button,
+  .mark-as-unread-button {
+    background: none;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    outline: none;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .mark-as-read-button:hover {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  .mark-as-unread-button:hover {
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+  }
+  
+  .no-notification {
+    padding: 25px;
     text-align: center;
-}
+    color: #777;
+    font-size: 0.9rem;
+  }
+  
+  .load-more-indicator {
+    padding: 15px 22px;
+    text-align: center;
+    color: #555;
+    font-size: 0.9rem;
+  }

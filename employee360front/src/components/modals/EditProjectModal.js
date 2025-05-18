@@ -110,7 +110,7 @@ const EditProjectModal = ({ show, handleClose, project, refreshProjects }) => {
         
                 const usersWithRoles = formData.selectedUsers.map(userId => ({
                     user_id: parseInt(userId, 10),
-                    role_id: parseInt(userRoles[userId], 10) || null, // Ensure role_id is not undefined, send null if not selected
+                    role_id: parseInt(userRoles[userId], 10) || null, 
                 }));
         
                 const projectToUpdate = {

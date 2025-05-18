@@ -1,0 +1,26 @@
+.page-title {
+    color: #343a40;
+    margin-bottom: 1.5rem;
+    font-weight: bold; /* Ajout pour un titre plus marqué */
+  }
+  
+  .card-summary {
+    background-color: #fff; /* Changement pour un blanc plus propre */
+    border: 1px solid #e0e0e0; /* Bordure légèrement plus claire */
+    border-radius: 8px; /* Ajout de coins arrondis pour un aspect plus moderne */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Ajout d'une légère ombre */
+    padding: 1.5rem; /* Ajout de padding interne pour l'espace */
+  }
+  
+  .card-summary .card-title {
+    color: #007bff;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500; /* Légèrement plus gras pour le titre */
+  }
+  
+  .card-summary .card-text {
+    font-size: 1.75rem; /* Augmentation de la taille du texte principal */
+    font-weight: bold; /* Texte principal en gras */
+    color: #333; /* Couleur de texte plus foncée */
+  }

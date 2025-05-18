@@ -11,6 +11,7 @@ import { User } from '../user/user.entity';
 import { Project } from '../projects/project.entity';
 import { EvaluatorAssignment } from '../evaluator-assignment/evaluator-assignment.entity';
 import { EvaluationResponse } from '../evaluation-response/evaluation-response.entity';
+import { EmployeeSelfEvaluation } from 'src/employee-self-evaluation/employee-self-evaluation.entity';
 
 @Entity('evaluation_sessions')
 export class EvaluationSession {
@@ -81,4 +82,10 @@ export class EvaluationSession {
     }
     return [];
   }
+
+  @OneToMany(
+    () => EmployeeSelfEvaluation,
+    (selfEvaluation) => selfEvaluation.evaluationSession,
+  )
+  selfEvaluations: EmployeeSelfEvaluation[];
 }

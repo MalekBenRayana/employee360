@@ -95,7 +95,7 @@ const EvaluationFormCreator = () => {
       min: null,
       max: null,
       required: false,
-      performancePointTypeId: null // Nouveau champ
+      performancePointTypeId: null
     };
     setFormStructure(prevStructure => ({
       questions: [...prevStructure.questions, newQuestion]

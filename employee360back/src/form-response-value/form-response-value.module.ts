@@ -3,12 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FormResponseValue } from './form-response-value.entity';
 import { FormResponseValueService } from './form-response-value.service';
 import { FormResponseValueController } from './form-response-value.controller';
-import { EvaluationResponseModule } from '../evaluation-response/evaluation-response.module'; // Assurez-vous que le chemin d'accès est correct
-
+import { EvaluationResponseModule } from '../evaluation-response/evaluation-response.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([FormResponseValue]),
-    forwardRef(() => EvaluationResponseModule), // Utilisez forwardRef ici
+    forwardRef(() => EvaluationResponseModule),
   ],
   controllers: [FormResponseValueController],
   providers: [FormResponseValueService],

@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Repository,
@@ -15,6 +21,8 @@ import { PerformancePointType } from '../performance-point-type/performance-poin
 import { EmployeePointPeriodAggregate } from '../employee-point-period-aggregate/employee-point-period-aggregate.entity';
 import { EvaluationSession } from 'src/evaluation-session/evaluation-session.entity';
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
+import { EvaluationResponse } from 'src/evaluation-response/evaluation-response.entity';
+import { Project } from 'src/projects/project.entity';
 
 @Injectable()
 export class AdminDashboardService {
@@ -31,6 +39,10 @@ export class AdminDashboardService {
     private readonly evaluationSessionRepository: Repository<EvaluationSession>,
     @InjectRepository(PerformancePointChange)
     private readonly performancePointChangeRepository: Repository<PerformancePointChange>,
+    @InjectRepository(EvaluationResponse)
+    private readonly evaluationResponseRepository: Repository<EvaluationResponse>,
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>,
   ) {}
 
   async getTotalEmployees(): Promise<number> {
@@ -42,11 +54,7 @@ export class AdminDashboardService {
   }
 
   async getTotalEvaluations(): Promise<number> {
-    const result = await this.employeePointPeriodAggregateRepository
-      .createQueryBuilder('aggregate')
-      .select('SUM(aggregate.numberOfEvaluations)', 'total')
-      .getRawOne();
-    return parseInt(result.total || '0', 10);
+    return this.evaluationResponseRepository.count();
   }
 
   async getEvaluationsCurrentPeriod(): Promise<number> {
@@ -123,13 +131,13 @@ export class AdminDashboardService {
           In(
             employeesWithEvaluation.length > 0 ? employeesWithEvaluation : [-1],
           ),
-        ), // Exclude employees with evaluations
+        ),
       },
     });
   }
 
   async getAverageOverallScoreTrend(
-    numberOfPeriods: number, // Nombre de trimestres à afficher
+    numberOfPeriods: number,
   ): Promise<{ period: string; averageScore: number }[]> {
     const currentPeriod = this.getCurrentPeriodIdentifier();
     const [currentYear, currentQ] = currentPeriod.split('-Q').map(Number);
@@ -170,7 +178,7 @@ export class AdminDashboardService {
       }),
     );
 
-    return trendData.sort((a, b) => a.period.localeCompare(b.period)); // Sort chronologically
+    return trendData.sort((a, b) => a.period.localeCompare(b.period));
   }
   async getEvaluationsTrend(
     numberOfPeriods: number,
@@ -197,14 +205,14 @@ export class AdminDashboardService {
       }),
     );
 
-    return trendData.sort((a, b) => a.period.localeCompare(b.period)); // Sort chronologically
+    return trendData.sort((a, b) => a.period.localeCompare(b.period));
   }
 
   async getEmployeeScoreDistributionCurrentPeriod(): Promise<
     { range: string; count: number }[]
   > {
     const currentPeriod = this.getCurrentPeriodIdentifier();
-    // Get average score per employee for the current period
+
     const employeeAverages = await this.employeePointPeriodAggregateRepository
       .createQueryBuilder('aggregate')
       .select('aggregate.evaluateeId', 'employeeId')
@@ -283,7 +291,7 @@ export class AdminDashboardService {
         return {
           pointTypeName: pointType.name,
           trend: trendData.sort((a, b) => a.period.localeCompare(b.period)),
-        }; // Sort
+        };
       }),
     );
     return allTrends;
@@ -304,7 +312,7 @@ export class AdminDashboardService {
   private getCurrentPeriodIdentifier(): string {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1; // Les mois vont de 0 à 11
+    const month = now.getMonth() + 1;
     let quarter: number;
 
     if (month >= 1 && month <= 3) {
@@ -375,8 +383,8 @@ export class AdminDashboardService {
     if (!this.evaluationSessionRepository) return 0;
     const currentPeriod = this.getCurrentPeriodIdentifier();
     const [year, quarter] = currentPeriod.split('-Q');
-    let startMonth: string = '01'; // Valeur par défaut
-    let endMonth: string = '03'; // Valeur par défaut
+    let startMonth: string = '01';
+    let endMonth: string = '03';
 
     if (quarter === '1') {
       startMonth = '01';
@@ -455,8 +463,8 @@ export class AdminDashboardService {
   async searchEmployees(query: string): Promise<User[]> {
     return this.userRepository.find({
       where: [
-        { email: ILike(`%${query}%`) }, // Utilisez ILike pour l'email
-        { username: ILike(`%${query}%`) }, // Utilisez ILike pour le nom d'utilisateur
+        { email: ILike(`%${query}%`) },
+        { username: ILike(`%${query}%`) },
       ],
       take: 10,
     });
@@ -549,7 +557,7 @@ export class AdminDashboardService {
     rawScores.forEach((result) => {
       const projectId = result.project_project_id;
       const projectName = result.project_project_name;
-      const averageScore = result.average_score; // Récupérez la colonne agrégée
+      const averageScore = result.average_score;
 
       if (!scoresByProject[projectId]) {
         scoresByProject[projectId] = { projectName, averageScore: null };
@@ -609,7 +617,10 @@ export class AdminDashboardService {
       .leftJoin('evaluationSession.project', 'project')
       .leftJoin('evaluationSession.responses', 'evaluationResponse')
       .leftJoin('evaluationResponse.responseValues', 'formResponseValue')
-      .leftJoin('formResponseValue.performancePointChanges', 'performancePointChange')
+      .leftJoin(
+        'formResponseValue.performancePointChanges',
+        'performancePointChange',
+      )
       .leftJoin('performancePointChange.pointType', 'performancePointType')
       .select([
         'project.project_id AS projectId',
@@ -623,10 +634,184 @@ export class AdminDashboardService {
       .getRawMany();
 
     return rawScores.map((rawScore) => ({
-      projectId: rawScore.projectid, // Assumant des noms de colonnes en minuscules
-      projectName: rawScore.projectname, // Assumant des noms de colonnes en minuscules
-      performancePointName: rawScore.performancepointname, // Assumant des noms de colonnes en minuscules
-      score: rawScore.score !== null && rawScore.score !== undefined ? parseFloat(rawScore.score) : null,
+      projectId: rawScore.projectid,
+      projectName: rawScore.projectname,
+      performancePointName: rawScore.performancepointname,
+      score:
+        rawScore.score !== null && rawScore.score !== undefined
+          ? parseFloat(rawScore.score)
+          : null,
     }));
   }
+
+  async getTeamEmployeeStatsForProject(
+    managerId: number | undefined,
+    projectId: number,
+  ): Promise<
+    {
+      employeeId: number;
+      username: string;
+      email: string;
+      averageScore: number | null;
+      numberOfEvaluations: number;
+      totalPerformancePoints: number;
+      projectAverageScore: number | null;
+      projectAveragePerformancePointScore: number | null;
+      averageScoresByPerformancePoint: {
+        [pointName: string]: number | null;
+      };
+      teamAverageScoresByPerformancePoint: {
+        [pointName: string]: number | null;
+      };
+    }[]
+  > {
+    // 1. Récupérer le manager et vérifier
+    const manager = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'role')
+      .where('user.id = :managerId', { managerId })
+      .andWhere('role.name = :managerRole', { managerRole: 'manager' })
+      .getOne();
+
+    if (!manager) {
+      throw new NotFoundException(
+        `Manager avec l'ID ${managerId} non trouvé ou n'a pas le rôle de manager.`,
+      );
+    }
+
+    // 2. Récupérer le projet et vérifier
+    const project = await this.projectRepository.findOne({
+      where: { project_id: projectId },
+    });
+    if (!project) {
+      throw new NotFoundException(`Projet avec l'ID ${projectId} non trouvé.`);
+    }
+
+    // 3. Récupérer les employés assignés au projet
+    const projectEmployees = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.projects', 'project')
+      .where('project.project_id = :projectId', { projectId })
+      .select(['user.id', 'user.username', 'user.email'])
+      .getMany();
+
+    if (!projectEmployees || projectEmployees.length === 0) {
+      return [];
+    }
+
+    // Récupérer tous les types de points de performance
+    const performancePointTypes = await this.performancePointTypeRepository.find();
+
+    // Calculer le score moyen de l'équipe par point de performance pour ce projet
+    const teamAverageScoresByPerformancePoint: { [pointName: string]: number | null } = {};
+    for (const pointType of performancePointTypes) {
+      const avgScoreResult = await this.performancePointChangeRepository
+        .createQueryBuilder('ppc')
+        .leftJoin('ppc.responseValue', 'rv')
+        .leftJoin('rv.evaluationResponse', 'er')
+        .leftJoin('er.session', 'es')
+        .where('es.projectId = :projectId', { projectId })
+        .andWhere('ppc.pointType.id = :pointTypeId', { pointTypeId: pointType.id })
+        .select('AVG(ppc.score)', 'avgScore')
+        .getRawOne();
+      teamAverageScoresByPerformancePoint[pointType.name] = avgScoreResult.avgScore
+        ? parseFloat(avgScoreResult.avgScore)
+        : null;
+    }
+
+    // 4. Pour chaque employé du projet, récupérer les statistiques spécifiques
+    const employeeStats = await Promise.all(
+      projectEmployees.map(async (employee) => {
+        // Récupérer le score moyen de l'employé pour ce projet
+        const averageScoreResult = await this.evaluationResponseRepository
+          .createQueryBuilder('response')
+          .leftJoin('response.session', 'session')
+          .where('session.evaluatee.id = :employeeId', { employeeId: employee.id })
+          .andWhere('session.projectId = :projectId', { projectId })
+          .select('AVG(response.score)', 'average')
+          .getRawOne();
+        const averageScore = averageScoreResult.average ? parseFloat(averageScoreResult.average) : null;
+
+        // Récupérer le nombre total d'évaluations complétées par l'employé pour ce projet
+        const numberOfEvaluationsResult = await this.evaluationSessionRepository.count({
+          where: { evaluatee: { id: employee.id }, projectId: projectId, status: 'completed' },
+        });
+
+        // Récupérer le total des points de performance de l'employé pour ce projet
+        const totalPerformancePointsResult = await this.performancePointChangeRepository
+          .createQueryBuilder('ppc')
+          .leftJoin('ppc.responseValue', 'rv')
+          .leftJoin('rv.evaluationResponse', 'er')
+          .leftJoin('er.session', 'es')
+          .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
+          .andWhere('es.projectId = :projectId', { projectId })
+          .select('SUM(ppc.score)', 'totalPoints')
+          .getRawOne();
+        const totalPerformancePoints = totalPerformancePointsResult.totalPoints
+          ? parseInt(totalPerformancePointsResult.totalPoints, 10)
+          : 0;
+
+        // Calculer le score moyen par point de performance pour CET employé dans ce projet
+        const averageScoresByPerformancePoint: { [pointName: string]: number | null } = {};
+        for (const pointType of performancePointTypes) {
+          const avgScoreResult = await this.performancePointChangeRepository
+            .createQueryBuilder('ppc')
+            .leftJoin('ppc.responseValue', 'rv')
+            .leftJoin('rv.evaluationResponse', 'er')
+            .leftJoin('er.session', 'es')
+            .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
+            .andWhere('es.projectId = :projectId', { projectId })
+            .andWhere('ppc.pointType.id = :pointTypeId', { pointTypeId: pointType.id })
+            .select('AVG(ppc.score)', 'avgScore')
+            .getRawOne();
+          averageScoresByPerformancePoint[pointType.name] = avgScoreResult.avgScore
+            ? parseFloat(avgScoreResult.avgScore)
+            : null;
+        }
+
+        // Calculer le score moyen du projet pour CET employé
+        const projectAverageScoreResult = await this.evaluationResponseRepository
+          .createQueryBuilder('response')
+          .leftJoin('response.session', 'session')
+          .where('session.evaluatee.id = :employeeId', { employeeId: employee.id })
+          .andWhere('session.projectId = :projectId', { projectId })
+          .select('AVG(response.score)', 'average')
+          .getRawOne();
+        const projectAverageScore = projectAverageScoreResult.average ? parseFloat(projectAverageScoreResult.average) : null;
+
+        // Calculer le score moyen des points de performance pour CET employé dans ce projet
+        const projectAveragePerformancePointScoreResult = await this.performancePointChangeRepository
+          .createQueryBuilder('ppc')
+          .leftJoin('ppc.responseValue', 'rv')
+          .leftJoin('rv.evaluationResponse', 'er')
+          .leftJoin('er.session', 'es')
+          .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
+          .andWhere('es.projectId = :projectId')
+          .select('AVG(ppc.score)', 'averagePoints')
+          .setParameters({ projectId: projectId }) // Correction ici : s'assurer que projectId est passé comme paramètre nommé
+          .getRawOne();
+        const projectAveragePerformancePointScore = projectAveragePerformancePointScoreResult.averagePoints
+          ? parseFloat(projectAveragePerformancePointScoreResult.averagePoints)
+          : null;
+
+        return {
+          employeeId: employee.id,
+          username: employee.username,
+          email: employee.email,
+          averageScore,
+          numberOfEvaluations: numberOfEvaluationsResult,
+          totalPerformancePoints,
+          projectAverageScore,
+          projectAveragePerformancePointScore,
+          averageScoresByPerformancePoint,
+          teamAverageScoresByPerformancePoint,
+        };
+      }),
+    );
+
+    return employeeStats;
+  }
+
+
+  
 }

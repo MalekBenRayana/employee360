@@ -6,10 +6,13 @@ import {
   Param,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { Project } from './project.entity';
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('projects')
 export class ProjectsController {
@@ -57,4 +60,11 @@ export class ProjectsController {
   getUserAssignedProjects(@Param('userId') userId: number) {
     return this.projectsService.getUserAssignedProjects(userId);
   }
+  @Get('manager/:managerId')
+  async getProjectsByManagerId(
+    @Param('managerId', ParseIntPipe) managerId: number,
+  ): Promise<Project[]> {
+    return this.projectsService.getManagerProjectsList(managerId);
+  }
+
 }

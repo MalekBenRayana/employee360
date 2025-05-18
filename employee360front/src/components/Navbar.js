@@ -1,30 +1,33 @@
 import React, { useState, useContext } from "react";
- import { Link, useNavigate } from "react-router-dom";
- import { useAuth } from "../auth/AuthContext";
- import {
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import {
   FaUserAlt, FaSignOutAlt, FaCog,
-  FaCaretDown, FaBars, FaFileAlt, FaTasks, FaBuilding, FaListAlt, FaPencilAlt
- } from 'react-icons/fa';
- import NotificationListener from './NotificationListener';
- import { LayoutContext } from '../contexts/LayoutContext';
- import ProxymLogo from '../assets/images/Logo-Proxym.png';
- import { FaList } from 'react-icons/fa';
+  FaCaretDown, FaBars, FaFileAlt, FaTasks, FaBuilding, FaListAlt, FaPencilAlt,
+  FaClock
+} from 'react-icons/fa';
+import NotificationListener from './NotificationListener';
+import { LayoutContext } from '../contexts/LayoutContext';
+import ProxymLogo from '../assets/images/Logo-Proxym.png';
+import { FaList } from 'react-icons/fa';
 
- const Navbar = () => {
+const Navbar = () => {
   const { role, userId, logout } = useAuth();
   const { collapsed, toggleSidebar } = useContext(LayoutContext);
   const [profileOpen, setProfileOpen] = useState(false);
   const [evaluationsOpen, setEvaluationsOpen] = useState(false);
+  const [timeTrackingOpen, setTimeTrackingOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleProfileDropdown = () => setProfileOpen(prev => !prev);
   const toggleEvaluationsDropdown = () => setEvaluationsOpen(prev => !prev);
+  const toggleTimeTrackingDropdown = () => setTimeTrackingOpen(prev => !prev);
 
   const handleDashboardNavigation = () => {
     if (role === "admin") {
       navigate("/admin-dashboard");
     } else if (role === "employee" && userId) {
-              navigate("/employee-dashboard");
+      navigate("/employee-dashboard");
     } else if (role === "manager") {
       navigate("/manager-dashboard");
     } else {
@@ -66,9 +69,7 @@ import React, { useState, useContext } from "react";
           )}
         </li>
 
-        <li>
-          <NotificationListener />
-        </li>
+        
 
         {isEvaluationsMenuVisible && (
           <li className={`submenu ${evaluationsOpen ? "open" : ""}`}>
@@ -87,15 +88,51 @@ import React, { useState, useContext } from "react";
                     <li><Link to="/formules">Gestion des Formules</Link></li>
                   </>
                 )}
-
+                {role === "employee" && (
+                  <>
+                    <li><Link to="/assigned-evaluations">Évaluations à réaliser</Link></li>
+                    <li><Link to="/self-evaluation">Auto-évaluation</Link></li>
+                  </>
+                )}
+                {role === "manager" && (
+                  <>
+                    <li><Link to="/assigned-evaluations">Évaluations à réaliser</Link></li>
+                  </>
+                )}
               </ul>
             )}
           </li>
         )}
 
+        <li className={`submenu ${timeTrackingOpen ? "open" : ""}`}>
+          <div onClick={toggleTimeTrackingDropdown}>
+            <FaClock />
+            {!collapsed && <span>Suivi du temps</span>}
+            {!collapsed && <FaCaretDown className="dropdown-icon" />}
+          </div>
+          {timeTrackingOpen && !collapsed && (
+            <ul className="submenu-items">
+              {role === "admin" && (
+                <>
+                  <li><Link to="/admin/retards">Retards</Link></li>
+                  <li><Link to="/admin/conges">Congés</Link></li>
+                  <li><Link to="/admin/deplacements">Déplacement</Link></li>
+                </>
+              )}
+              {role === "employee" && (
+                <>
+                  <li><Link to="/employee/retards">Mes Retards</Link></li>
+                  <li><Link to="/employee/conges">Mes Congés</Link></li>
+                  <li><Link to="/employee/deplacements">Mes Déplacements</Link></li>
+                </>
+              )}
+            </ul>
+          )}
+        </li>
+
         {role === "admin" && (
           <>
-          <li>
+            <li>
               <Link to="/gestion-personnel">
                 <FaTasks />
                 {!collapsed && <span>Gestion du Personnel</span>}
@@ -107,7 +144,7 @@ import React, { useState, useContext } from "react";
                 {!collapsed && <span>Gestion des Projets</span>}
               </Link>
             </li>
-            
+
             <li>
               <Link to="/department-management">
                 <FaBuilding />
@@ -132,6 +169,6 @@ import React, { useState, useContext } from "react";
       </ul>
     </div>
   );
- };
+};
 
- export default Navbar;
+export default Navbar;

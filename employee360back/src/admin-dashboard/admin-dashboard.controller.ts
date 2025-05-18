@@ -2,6 +2,8 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { User } from 'src/user/user.entity';
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/role.entity';
 
 @Controller('admin/dashboard')
 export class AdminDashboardController {
@@ -163,4 +165,35 @@ export class AdminDashboardController {
       parseInt(employeeId, 10),
     );
   }
+
+  @Get('projects/:projectId/team-stats')
+  @Roles('admin', 'manager') // Utilisez les noms des rôles (chaînes de caractères)
+  async getTeamEmployeeStatsForProject(
+    @Param('projectId') projectId: string,
+    @Query('managerId') managerId?: string,
+  ): Promise<
+    {
+      employeeId: number;
+      username: string;
+      email: string;
+      averageScore: number | null;
+      numberOfEvaluations: number;
+      totalPerformancePoints: number;
+      projectAverageScore: number | null;
+      projectAveragePerformancePointScore: number | null;
+      averageScoresByPerformancePoint: {
+        [pointName: string]: number | null;
+      };
+    }[]
+  > {
+    const projectIdNumber = parseInt(projectId, 10);
+    const managerIdNumber = managerId ? parseInt(managerId, 10) : undefined;
+    return this.adminDashboardService.getTeamEmployeeStatsForProject(
+      managerIdNumber,
+      projectIdNumber,
+    );
+  }
+
+
+
 }

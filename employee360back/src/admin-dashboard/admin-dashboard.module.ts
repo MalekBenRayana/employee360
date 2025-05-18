@@ -7,6 +7,9 @@ import { EvaluationSession } from '../evaluation-session/evaluation-session.enti
 import { PerformancePointChange } from '../performance-point-change/performance-point-change.entity';
 import { AdminDashboardController } from './admin-dashboard.controller';
 import { AdminDashboardService } from './admin-dashboard.service';
+import { EvaluationResponseModule } from 'src/evaluation-response/evaluation-response.module';
+import { ProjectsModule } from 'src/projects/projects.module';
+import { Project } from 'src/projects/project.entity';
 
 @Module({
   imports: [
@@ -16,7 +19,10 @@ import { AdminDashboardService } from './admin-dashboard.service';
       EmployeePointPeriodAggregate,
       EvaluationSession,
       PerformancePointChange,
+      Project,
     ]),
+    EvaluationResponseModule,
+    ProjectsModule,
   ],
   controllers: [AdminDashboardController],
   providers: [AdminDashboardService],
