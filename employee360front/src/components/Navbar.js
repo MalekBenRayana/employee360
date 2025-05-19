@@ -17,11 +17,14 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [evaluationsOpen, setEvaluationsOpen] = useState(false);
   const [timeTrackingOpen, setTimeTrackingOpen] = useState(false);
+  const [taskTrackingOpen, setTaskTrackingOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const toggleProfileDropdown = () => setProfileOpen(prev => !prev);
   const toggleEvaluationsDropdown = () => setEvaluationsOpen(prev => !prev);
   const toggleTimeTrackingDropdown = () => setTimeTrackingOpen(prev => !prev);
+  const toggleTaskTrackingDropdown = () => setTaskTrackingOpen(prev => !prev);
 
   const handleDashboardNavigation = () => {
     if (role === "admin") {
@@ -69,7 +72,7 @@ const Navbar = () => {
           )}
         </li>
 
-        
+
 
         {isEvaluationsMenuVisible && (
           <li className={`submenu ${evaluationsOpen ? "open" : ""}`}>
@@ -124,6 +127,33 @@ const Navbar = () => {
                   <li><Link to="/employee/retards">Mes Retards</Link></li>
                   <li><Link to="/employee/conges">Mes Congés</Link></li>
                   <li><Link to="/employee/deplacements">Mes Déplacements</Link></li>
+                </>
+              )}
+              {role === "manager" && (
+                <>
+                  <li><Link to="/manager/time-tracking">Suivi de l'équipe</Link></li> {/* Ajout pour le manager */}
+                </>
+              )}
+            </ul>
+          )}
+        </li>
+
+        <li className={`submenu ${taskTrackingOpen ? "open" : ""}`}>
+          <div onClick={toggleTaskTrackingDropdown}>
+            <FaTasks /> {/* Changed to FaTasks */}
+            {!collapsed && <span>Suivi des tâches</span>}
+            {!collapsed && <FaCaretDown className="dropdown-icon" />}
+          </div>
+          {taskTrackingOpen && !collapsed && (
+            <ul className="submenu-items">
+              {role === "admin" && (
+                <>
+                  <li><Link to="/admin/tasks">Tâches</Link></li>
+                </>
+              )}
+              {role === "employee" && (
+                <>
+                  <li><Link to="/employee/tasks">Mes Tâches</Link></li> {/* Ajout du lien pour l'employé */}
                 </>
               )}
             </ul>

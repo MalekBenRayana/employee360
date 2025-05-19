@@ -40,7 +40,6 @@ export class EvaluationResponse {
     () => FormResponseValue,
     (responseValue) => responseValue.evaluationResponse,
     {
-      eager: true,
       cascade: true,
     },
   )

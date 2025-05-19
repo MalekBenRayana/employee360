@@ -12,6 +12,7 @@ import { EmployeePointPeriodAggregateModule } from 'src/employee-point-period-ag
 import { PerformancePointTypeModule } from 'src/performance-point-type/performance-point-type.module';
 import { EmployeeSelfEvaluationModule } from 'src/employee-self-evaluation/employee-self-evaluation.module';
 import { PerformancePointChangeModule } from 'src/performance-point-change/performance-point-change.module';
+// import { AiEvaluationModule } from 'src/ai-evaluation/ai-evaluation.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PerformancePointChangeModule } from 'src/performance-point-change/perfo
     PerformancePointTypeModule,
     EmployeeSelfEvaluationModule,
     forwardRef(() => PerformancePointChangeModule),
+    // AiEvaluationModule,
   ],
   providers: [EvaluationResponseService],
   controllers: [EvaluationResponseController],

@@ -331,7 +331,9 @@ export class ProjectsService {
 
   async getManagerProjectsList(managerId: number): Promise<Project[]> {
     // 1. Vérifier si le manager existe
-    const manager = await this.userRepository.findOne({ where: { id: managerId } });
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
     if (!manager) {
       throw new NotFoundException(`Manager avec l'ID ${managerId} non trouvé.`);
     }
@@ -344,7 +346,4 @@ export class ProjectsService {
 
     return projects;
   }
-
-
-
 }

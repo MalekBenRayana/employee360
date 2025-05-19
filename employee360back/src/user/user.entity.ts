@@ -9,14 +9,14 @@ import {
 import { Role } from '../roles/role.entity';
 import { Permission } from '../permissions/permission.entity';
 import { Project } from '../projects/project.entity';
-import { Department } from 'src/departments/department.entity';
-import { ProjectAssignmentLog } from 'src/project-assignment-logs/project-assignment-log.entity';
-import { EvaluationSession } from 'src/evaluation-session/evaluation-session.entity';
-import { EvaluatorAssignment } from 'src/evaluator-assignment/evaluator-assignment.entity';
-import { EvaluationResponse } from 'src/evaluation-response/evaluation-response.entity';
-import { EmployeePointPeriodAggregate } from 'src/employee-point-period-aggregate/employee-point-period-aggregate.entity';
-import { EmployeeSelfEvaluation } from 'src/employee-self-evaluation/employee-self-evaluation.entity';
-import { TimeTracking } from 'src/time-tracking/time-tracking.entity'; // Importez l'entité TimeTracking
+import { TimeTracking } from '../time-tracking/time-tracking.entity';
+import { EmployeeSelfEvaluation } from '../employee-self-evaluation/employee-self-evaluation.entity';
+import { EmployeePointPeriodAggregate } from '../employee-point-period-aggregate/employee-point-period-aggregate.entity';
+import { Department } from '../departments/department.entity';
+import { EvaluationResponse } from '../evaluation-response/evaluation-response.entity';
+import { EvaluationSession } from '../evaluation-session/evaluation-session.entity';
+import { EvaluatorAssignment } from '../evaluator-assignment/evaluator-assignment.entity';
+import { ProjectAssignmentLog } from '../project-assignment-logs/project-assignment-log.entity';
 
 @Entity()
 export class User {

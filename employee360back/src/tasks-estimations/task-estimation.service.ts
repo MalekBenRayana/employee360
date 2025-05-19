@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TaskEstimation } from './task-estimation.entity';
 import { User } from 'src/user/user.entity';
+import { TaskEstimation } from './task-estimation.entity';
 
 @Injectable()
 export class TaskEstimationService {
@@ -45,7 +45,7 @@ export class TaskEstimationService {
         where: { id },
         relations: ['user'],
       })) || undefined
-    ); // Retourne undefined explicitement si null
+    );
   }
 
   async findAll(): Promise<TaskEstimation[]> {
@@ -56,17 +56,29 @@ export class TaskEstimationService {
     await this.taskEstimationRepository.delete(id);
   }
 
+  async findByUserId(userId: number): Promise<TaskEstimation[]> {
+    return this.taskEstimationRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+  }
+
   async findByUserIdAndPeriod(
     userId: number,
     periodStart?: Date,
     periodEnd?: Date,
-  ): Promise<TaskEstimation | undefined> {
-    return (
-      (await this.taskEstimationRepository.findOne({
-        where: { user: { id: userId }, periodStart, periodEnd },
-        relations: ['user'],
-      })) || undefined
-    ); // Retourne undefined explicitement si null
+  ): Promise<TaskEstimation[]> {
+    const where: any = { user: { id: userId } };
+    if (periodStart) {
+      where.periodStart = periodStart;
+    }
+    if (periodEnd) {
+      where.periodEnd = periodEnd;
+    }
+    return this.taskEstimationRepository.find({
+      where,
+      relations: ['user'],
+    });
   }
 
   async createOrUpdate(
@@ -90,6 +102,7 @@ export class TaskEstimationService {
       return this.taskEstimationRepository.save({
         ...existingEstimation,
         ...data,
+        user,
       });
     } else {
       const newTaskEstimation = this.taskEstimationRepository.create({

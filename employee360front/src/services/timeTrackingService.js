@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
 
-const gestionRetardsService = {
+const timeTrackingService = {
   async getAllRetards() {
     try {
       const response = await axios.get(`${API_BASE_URL}/time-tracking`);
@@ -43,6 +43,18 @@ const gestionRetardsService = {
     }
   },
 
+  async getTeamStats(managerId) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/time-tracking/team-stats/${managerId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Erreur lors de la récupération des statistiques de l'équipe pour le manager ${managerId}:`,
+        error,
+      );
+      throw error;
+    }
+  },
 };
 
-export default gestionRetardsService;
+export default timeTrackingService;

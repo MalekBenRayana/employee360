@@ -54,6 +54,11 @@ export class TaskEstimationController {
     return this.taskEstimationService.delete(id);
   }
 
+  @Get('user/:userId')
+  async findByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.taskEstimationService.findByUserId(userId);
+  }
+
   @Get('user/:userId/period')
   async findByUserIdAndPeriod(
     @Param('userId', ParseIntPipe) userId: number,

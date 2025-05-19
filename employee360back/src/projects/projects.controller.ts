@@ -66,5 +66,4 @@ export class ProjectsController {
   ): Promise<Project[]> {
     return this.projectsService.getManagerProjectsList(managerId);
   }
-
 }

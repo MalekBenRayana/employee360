@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../Navbar';
 import '../../assets/styles/layout.css';
 import { LayoutContext } from '../../contexts/LayoutContext';
-import gestionRetardsService from '../../services/gestionRetardsService';
+import gestionRetardsService from '../../services/timeTrackingService';
 import { useAuth } from '../../auth/AuthContext';
 
 const SuiviRetards = () => {

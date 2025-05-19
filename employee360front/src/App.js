@@ -42,6 +42,9 @@ import CongesEmployee from "./components/time-tracking-employee/CongesEmp";
 import DeplacementsEmployee from "./components/time-tracking-employee/DeplacementsEmp";
 import AppHeader from './components/AppHeader';
 import ManagerProjectDetails from "./pages/ManagerProjectDetails"; // Importez le nouveau composant
+import TasksTrackingAdmin from './components/tasks-tracking-admin/TasksTrakingAdmin';
+import TasksTrackingEmployee from './components/tasks-tracking-employee/TasksTrackingEmployee'; // Importez le nouveau composant
+import TimeTrackingManager from './components/time-traking-manager/TimeTrackingManager';
 
 const App = () => {
   const location = useLocation();
@@ -273,6 +276,15 @@ const App = () => {
               }
             />
 
+
+            <Route
+              path="/admin/tasks"
+              element={<ProtectedRoute roleRequired="admin"><TasksTrackingAdmin /></ProtectedRoute>} />
+
+            <Route
+              path="/employee/tasks"
+              element={<ProtectedRoute roleRequired="employee"><TasksTrackingEmployee /></ProtectedRoute>} /> {/* Ajout de la route pour l'employé */}
+
             <Route
               path="/admin/retards"
               element={<ProtectedRoute roleRequired="admin"><AutorisationsRetardAdmin /></ProtectedRoute>} />
@@ -288,6 +300,10 @@ const App = () => {
             <Route
               path="/employee/deplacements"
               element={<ProtectedRoute roleRequired="employee"><DeplacementsEmployee /></ProtectedRoute>} />
+
+              <Route
+              path="/manager/time-tracking"
+              element={<ProtectedRoute roleRequired="manager"><TimeTrackingManager /></ProtectedRoute>} />
 
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
-import Navbar from '../Navbar';
-import '../../assets/styles/layout.css';
-import { LayoutContext } from '../../contexts/LayoutContext';
-import timeTrackingService from '../../services/timeTrackingService';
+import Navbar from '../Navbar'; // Assurez-vous que le chemin est correct
+import '../../assets/styles/layout.css'; // Assurez-vous que le chemin est correct
+import { LayoutContext } from '../../contexts/LayoutContext'; // Assurez-vous que le chemin est correct
+import taskEstimationsService from '../../services/taskEstimationsService'; // Assurez-vous que le chemin est correct
 
-const GestionRetards = () => {
+const TasksTrackingAdmin = () => {
   const { collapsed } = useContext(LayoutContext);
-  const [retardData, setRetardData] = useState([]);
+  const [taskEstimations, setTaskEstimations] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,22 +14,26 @@ const GestionRetards = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [searchUsername, setSearchUsername] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [totalRetards, setTotalRetards] = useState(0);
-  const [totalHeuresRequises, setTotalHeuresRequises] = useState(0);
+  const [totalEstimatedTime, setTotalEstimatedTime] = useState(0);
+  const [totalRealizedTime, setTotalRealizedTime] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const retards = await timeTrackingService.getAllRetards();
-        const usersData = await timeTrackingService.getAllUsers();
-        setRetardData(retards);
+        const estimations = await taskEstimationsService.getAllTaskEstimations();
+        const usersData = estimations.map(est => est.user).filter((user, index, self) =>
+          index === self.findIndex((t) => (
+            t.id === user.id
+          ))
+        );
+        setTaskEstimations(estimations);
         setUsers(usersData);
 
-        const employeeOptions = [{ id: 'all', name: 'Tous les employés' }];
+        const employeeOptions = [{ id: 'all', username: 'Tous les employés' }];
         usersData.forEach(user => {
-          employeeOptions.push({ id: user.id, name: user.username });
+          employeeOptions.push({ id: user.id, username: user.username });
         });
         setEmployeeList(employeeOptions);
 
@@ -46,21 +50,21 @@ const GestionRetards = () => {
 
   const filteredData = useMemo(() => {
     return selectedEmployeeId === 'all'
-      ? retardData.filter(item => !searchResults.length || searchResults.some(res => res.id === item.id))
-      : retardData.filter(item => item.userId === parseInt(selectedEmployeeId) && (!searchResults.length || searchResults.some(res => res.id === item.id)));
-  }, [retardData, selectedEmployeeId, searchResults]);
+      ? taskEstimations.filter(item =>
+          !searchResults.length || searchResults.some(res => res.id === item.id)
+        )
+      : taskEstimations.filter(item =>
+          item.user.id === parseInt(selectedEmployeeId) &&
+          (!searchResults.length || searchResults.some(res => res.id === item.id))
+        );
+  }, [taskEstimations, selectedEmployeeId, searchResults]);
 
   useEffect(() => {
-    const nbrTotalRetards = filteredData.reduce((sum, item) => sum + item.nbreRetards, 0);
-    const periodeTotaleRetards = filteredData.reduce((sum, item) => sum + (item.heuresRequises || 0), 0);
-    setTotalRetards(nbrTotalRetards);
-    setTotalHeuresRequises(periodeTotaleRetards);
+    const totalEstimated = filteredData.reduce((sum, item) => sum + item.totalEstimatedTime, 0);
+    const totalRealized = filteredData.reduce((sum, item) => sum + item.totalRealizedTime, 0);
+    setTotalEstimatedTime(totalEstimated);
+    setTotalRealizedTime(totalRealized);
   }, [filteredData]);
-
-  const getUsername = (userId) => {
-    const user = users.find(user => user.id === userId);
-    return user ? user.username : `Employé ${userId}`;
-  };
 
   const handleEmployeeChange = (event) => {
     setSelectedEmployeeId(event.target.value);
@@ -76,11 +80,15 @@ const GestionRetards = () => {
       setLoading(true);
       setError(null);
       try {
-        const results = await timeTrackingService.getRetardsByUser(username);
-        setSearchResults(results);
+
+        const results = await taskEstimationsService.getAllTaskEstimations(); 
+        const filteredResults = results.filter(estimation =>
+          estimation.user.username.toLowerCase().includes(username.toLowerCase())
+        );
+        setSearchResults(filteredResults);
         setLoading(false);
       } catch (err) {
-        setError(`Erreur lors de la recherche des retards pour "${username}".`);
+        setError(`Erreur lors de la recherche des estimations pour "${username}".`);
         console.error(err);
         setLoading(false);
         setSearchResults([]);
@@ -126,22 +134,22 @@ const GestionRetards = () => {
       <Navbar />
       <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
         <div className="container-fluid mt-4">
-          <h1>Suivi des Retards</h1>
+          <h1>Suivi des Estimations de Tâches</h1>
 
           <div className="row mb-4">
             <div className="col-md-6">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Nombre Total de Retards</h5>
-                  <p className="card-text">{totalRetards}</p>
+                  <h5 className="card-title">Temps Estimé Total (min)</h5>
+                  <p className="card-text">{totalEstimatedTime}</p>
                 </div>
               </div>
             </div>
             <div className="col-md-6">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Période Totale des Retards (Heures)</h5>
-                  <p className="card-text">{totalHeuresRequises}</p>
+                  <h5 className="card-title">Temps Réalisé Total (min)</h5>
+                  <p className="card-text">{totalRealizedTime}</p>
                 </div>
               </div>
             </div>
@@ -159,7 +167,7 @@ const GestionRetards = () => {
                   onChange={handleEmployeeChange}
                 >
                   {employeeList.map(employee => (
-                    <option key={employee.id} value={employee.id}>{employee.name}</option>
+                    <option key={employee.id} value={employee.id}>{employee.username}</option>
                   ))}
                 </select>
               </div>
@@ -184,38 +192,44 @@ const GestionRetards = () => {
 
           <div className="card mb-4">
             <div className="card-body">
-              <h5 className="card-title">Détails des Retards</h5>
+              <h5 className="card-title">Détails des Estimations de Tâches</h5>
               <h6 className="mb-3">
                 {selectedEmployeeId !== 'all'
-                  ? `Retards pour ${employeeList.find(e => e.id === selectedEmployeeId)?.name || 'Employé non trouvé'}`
+                  ? `Estimations de tâches pour ${employeeList.find(e => e.id === selectedEmployeeId)?.username || 'Employé non trouvé'}`
                   : searchResults.length > 0
                     ? `Résultats de la recherche pour "${searchUsername}"`
-                    : 'Tous les retards'}
+                    : 'Toutes les estimations de tâches'}
               </h6>
               <div className="table-responsive">
                 <table className="table table-striped table-bordered">
                   <thead>
                     <tr>
-                      <th>ID</th>
                       <th>Employé</th>
-                      <th>Nombre de Retards</th>
-                      <th>Date de Début</th>
-                      <th>Date de Fin</th>
-                      <th>Heures Requises</th>
+                      <th>Temps Estimé Total (min)</th>
+                      <th>Temps Réalisé Total (min)</th>
+                      <th>Violations d'Échéance</th>
+                      <th>Période de Violation Totale (jours)</th>
+                      <th>Début de Période</th>
+                      <th>Fin de Période</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredData.map(retard => (
-                      <tr key={retard.id}>
-                        <td>{retard.id}</td>
-                        <td>{getUsername(retard.userId)}</td>
-                        <td>{retard.nbreRetards}</td>
-                        <td>{retard.startDate}</td>
-                        <td>{retard.endDate}</td>
-                        <td>{retard.heuresRequises}</td>
+                    {filteredData.map(estimation => (
+                      <tr key={estimation.id}>
+                        <td>{estimation.user.username}</td>
+                        <td>{estimation.totalEstimatedTime}</td>
+                        <td>{estimation.totalRealizedTime}</td>
+                        <td>{estimation.numberOfDueDateViolations}</td>
+                        <td>{estimation.totalViolationPeriod}</td>
+                        <td>{estimation.periodStart}</td>
+                        <td>{estimation.periodEnd}</td>
                       </tr>
                     ))}
-                    {filteredData.length === 0 && <tr><td colSpan="6">Aucun retard trouvé pour la sélection.</td></tr>}
+                    {filteredData.length === 0 && (
+                      <tr>
+                        <td colSpan="8">Aucune estimation de tâche trouvée pour la sélection.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -227,4 +241,4 @@ const GestionRetards = () => {
   );
 };
 
-export default GestionRetards;
+export default TasksTrackingAdmin;

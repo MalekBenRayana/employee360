@@ -23,7 +23,6 @@ import { EvaluationSession } from 'src/evaluation-session/evaluation-session.ent
 import { PerformancePointChange } from 'src/performance-point-change/performance-point-change.entity';
 import { EvaluationResponse } from 'src/evaluation-response/evaluation-response.entity';
 import { Project } from 'src/projects/project.entity';
-
 @Injectable()
 export class AdminDashboardService {
   private readonly logger = new Logger(AdminDashboardService.name);
@@ -700,10 +699,13 @@ export class AdminDashboardService {
     }
 
     // Récupérer tous les types de points de performance
-    const performancePointTypes = await this.performancePointTypeRepository.find();
+    const performancePointTypes =
+      await this.performancePointTypeRepository.find();
 
     // Calculer le score moyen de l'équipe par point de performance pour ce projet
-    const teamAverageScoresByPerformancePoint: { [pointName: string]: number | null } = {};
+    const teamAverageScoresByPerformancePoint: {
+      [pointName: string]: number | null;
+    } = {};
     for (const pointType of performancePointTypes) {
       const avgScoreResult = await this.performancePointChangeRepository
         .createQueryBuilder('ppc')
@@ -711,12 +713,13 @@ export class AdminDashboardService {
         .leftJoin('rv.evaluationResponse', 'er')
         .leftJoin('er.session', 'es')
         .where('es.projectId = :projectId', { projectId })
-        .andWhere('ppc.pointType.id = :pointTypeId', { pointTypeId: pointType.id })
+        .andWhere('ppc.pointType.id = :pointTypeId', {
+          pointTypeId: pointType.id,
+        })
         .select('AVG(ppc.score)', 'avgScore')
         .getRawOne();
-      teamAverageScoresByPerformancePoint[pointType.name] = avgScoreResult.avgScore
-        ? parseFloat(avgScoreResult.avgScore)
-        : null;
+      teamAverageScoresByPerformancePoint[pointType.name] =
+        avgScoreResult.avgScore ? parseFloat(avgScoreResult.avgScore) : null;
     }
 
     // 4. Pour chaque employé du projet, récupérer les statistiques spécifiques
@@ -726,33 +729,45 @@ export class AdminDashboardService {
         const averageScoreResult = await this.evaluationResponseRepository
           .createQueryBuilder('response')
           .leftJoin('response.session', 'session')
-          .where('session.evaluatee.id = :employeeId', { employeeId: employee.id })
+          .where('session.evaluatee.id = :employeeId', {
+            employeeId: employee.id,
+          })
           .andWhere('session.projectId = :projectId', { projectId })
           .select('AVG(response.score)', 'average')
           .getRawOne();
-        const averageScore = averageScoreResult.average ? parseFloat(averageScoreResult.average) : null;
+        const averageScore = averageScoreResult.average
+          ? parseFloat(averageScoreResult.average)
+          : null;
 
         // Récupérer le nombre total d'évaluations complétées par l'employé pour ce projet
-        const numberOfEvaluationsResult = await this.evaluationSessionRepository.count({
-          where: { evaluatee: { id: employee.id }, projectId: projectId, status: 'completed' },
-        });
+        const numberOfEvaluationsResult =
+          await this.evaluationSessionRepository.count({
+            where: {
+              evaluatee: { id: employee.id },
+              projectId: projectId,
+              status: 'completed',
+            },
+          });
 
         // Récupérer le total des points de performance de l'employé pour ce projet
-        const totalPerformancePointsResult = await this.performancePointChangeRepository
-          .createQueryBuilder('ppc')
-          .leftJoin('ppc.responseValue', 'rv')
-          .leftJoin('rv.evaluationResponse', 'er')
-          .leftJoin('er.session', 'es')
-          .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
-          .andWhere('es.projectId = :projectId', { projectId })
-          .select('SUM(ppc.score)', 'totalPoints')
-          .getRawOne();
+        const totalPerformancePointsResult =
+          await this.performancePointChangeRepository
+            .createQueryBuilder('ppc')
+            .leftJoin('ppc.responseValue', 'rv')
+            .leftJoin('rv.evaluationResponse', 'er')
+            .leftJoin('er.session', 'es')
+            .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
+            .andWhere('es.projectId = :projectId', { projectId })
+            .select('SUM(ppc.score)', 'totalPoints')
+            .getRawOne();
         const totalPerformancePoints = totalPerformancePointsResult.totalPoints
           ? parseInt(totalPerformancePointsResult.totalPoints, 10)
           : 0;
 
         // Calculer le score moyen par point de performance pour CET employé dans ce projet
-        const averageScoresByPerformancePoint: { [pointName: string]: number | null } = {};
+        const averageScoresByPerformancePoint: {
+          [pointName: string]: number | null;
+        } = {};
         for (const pointType of performancePointTypes) {
           const avgScoreResult = await this.performancePointChangeRepository
             .createQueryBuilder('ppc')
@@ -761,38 +776,50 @@ export class AdminDashboardService {
             .leftJoin('er.session', 'es')
             .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
             .andWhere('es.projectId = :projectId', { projectId })
-            .andWhere('ppc.pointType.id = :pointTypeId', { pointTypeId: pointType.id })
+            .andWhere('ppc.pointType.id = :pointTypeId', {
+              pointTypeId: pointType.id,
+            })
             .select('AVG(ppc.score)', 'avgScore')
             .getRawOne();
-          averageScoresByPerformancePoint[pointType.name] = avgScoreResult.avgScore
-            ? parseFloat(avgScoreResult.avgScore)
-            : null;
+          averageScoresByPerformancePoint[pointType.name] =
+            avgScoreResult.avgScore
+              ? parseFloat(avgScoreResult.avgScore)
+              : null;
         }
 
         // Calculer le score moyen du projet pour CET employé
-        const projectAverageScoreResult = await this.evaluationResponseRepository
-          .createQueryBuilder('response')
-          .leftJoin('response.session', 'session')
-          .where('session.evaluatee.id = :employeeId', { employeeId: employee.id })
-          .andWhere('session.projectId = :projectId', { projectId })
-          .select('AVG(response.score)', 'average')
-          .getRawOne();
-        const projectAverageScore = projectAverageScoreResult.average ? parseFloat(projectAverageScoreResult.average) : null;
+        const projectAverageScoreResult =
+          await this.evaluationResponseRepository
+            .createQueryBuilder('response')
+            .leftJoin('response.session', 'session')
+            .where('session.evaluatee.id = :employeeId', {
+              employeeId: employee.id,
+            })
+            .andWhere('session.projectId = :projectId', { projectId })
+            .select('AVG(response.score)', 'average')
+            .getRawOne();
+        const projectAverageScore = projectAverageScoreResult.average
+          ? parseFloat(projectAverageScoreResult.average)
+          : null;
 
         // Calculer le score moyen des points de performance pour CET employé dans ce projet
-        const projectAveragePerformancePointScoreResult = await this.performancePointChangeRepository
-          .createQueryBuilder('ppc')
-          .leftJoin('ppc.responseValue', 'rv')
-          .leftJoin('rv.evaluationResponse', 'er')
-          .leftJoin('er.session', 'es')
-          .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
-          .andWhere('es.projectId = :projectId')
-          .select('AVG(ppc.score)', 'averagePoints')
-          .setParameters({ projectId: projectId }) // Correction ici : s'assurer que projectId est passé comme paramètre nommé
-          .getRawOne();
-        const projectAveragePerformancePointScore = projectAveragePerformancePointScoreResult.averagePoints
-          ? parseFloat(projectAveragePerformancePointScoreResult.averagePoints)
-          : null;
+        const projectAveragePerformancePointScoreResult =
+          await this.performancePointChangeRepository
+            .createQueryBuilder('ppc')
+            .leftJoin('ppc.responseValue', 'rv')
+            .leftJoin('rv.evaluationResponse', 'er')
+            .leftJoin('er.session', 'es')
+            .where('es.evaluatee.id = :employeeId', { employeeId: employee.id })
+            .andWhere('es.projectId = :projectId')
+            .select('AVG(ppc.score)', 'averagePoints')
+            .setParameters({ projectId: projectId }) // Correction ici : s'assurer que projectId est passé comme paramètre nommé
+            .getRawOne();
+        const projectAveragePerformancePointScore =
+          projectAveragePerformancePointScoreResult.averagePoints
+            ? parseFloat(
+                projectAveragePerformancePointScoreResult.averagePoints,
+              )
+            : null;
 
         return {
           employeeId: employee.id,
@@ -811,7 +838,4 @@ export class AdminDashboardService {
 
     return employeeStats;
   }
-
-
-  
 }

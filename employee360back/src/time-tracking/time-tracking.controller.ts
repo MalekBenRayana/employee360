@@ -14,14 +14,14 @@ import {
 } from '@nestjs/common';
 import { TimeTrackingService } from './time-tracking.service';
 import { TimeTracking } from './time-tracking.entity';
-import { ExternalTimeTrackingInputDto } from './dto/external-time-tracking-input.dto'; // Importez le DTO
+import { ExternalTimeTrackingInputDto } from './dto/external-time-tracking-input.dto';
 
 @Controller('time-tracking')
 export class TimeTrackingController {
   constructor(private readonly timeTrackingService: TimeTrackingService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe()) // Applique la validation uniquement ici
+  @UsePipes(new ValidationPipe())
   async create(
     @Body() timeTrackingData: Partial<TimeTracking>,
   ): Promise<TimeTracking> {
@@ -44,7 +44,7 @@ export class TimeTrackingController {
   }
 
   @Put(':id')
-  @UsePipes(new ValidationPipe()) // Applique la validation uniquement ici
+  @UsePipes(new ValidationPipe())
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() timeTrackingData: Partial<TimeTracking>,
@@ -58,7 +58,7 @@ export class TimeTrackingController {
   }
 
   @Post('external-time-tracking')
-  @UsePipes(new ValidationPipe()) // Applique la validation uniquement ici
+  @UsePipes(new ValidationPipe())
   async processExternalTimeTracking(
     @Body() externalTimeTrackingInput: ExternalTimeTrackingInputDto,
   ): Promise<TimeTracking[]> {
@@ -89,5 +89,18 @@ export class TimeTrackingController {
   async getTotalHeuresRequises(): Promise<{ total: number }> {
     const total = await this.timeTrackingService.getTotalHeuresRequises();
     return { total };
+  }
+
+   @Get('team-stats/:managerId')
+  async getTeamStats(
+    @Param('managerId', ParseIntPipe) managerId: number,
+  ): Promise<any> {
+    try {
+      return await this.timeTrackingService.getTeamTimeTrackingAndTaskEstimationStats(
+        managerId,
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 }

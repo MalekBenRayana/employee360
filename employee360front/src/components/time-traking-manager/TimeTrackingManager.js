@@ -4,9 +4,9 @@ import '../../assets/styles/layout.css';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import timeTrackingService from '../../services/timeTrackingService';
 
-const GestionRetards = () => {
+const TimeTrackingManager = () => {
   const { collapsed } = useContext(LayoutContext);
-  const [retardData, setRetardData] = useState([]);
+  const [timeTrackingData, setTimeTrackingData] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,50 +17,65 @@ const GestionRetards = () => {
   const [totalRetards, setTotalRetards] = useState(0);
   const [totalHeuresRequises, setTotalHeuresRequises] = useState(0);
 
+  // Supposons que vous avez un moyen de récupérer l'ID du manager connecté
+  const [managerId] = useState(5); // Remplacez par la logique réelle pour obtenir l'ID du manager
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const retards = await timeTrackingService.getAllRetards();
-        const usersData = await timeTrackingService.getAllUsers();
-        setRetardData(retards);
-        setUsers(usersData);
+        const teamStats = await timeTrackingService.getTeamStats(managerId);
+        // Mapper les données pour extraire les informations de suivi du temps
+        const timeTrackingInfo = teamStats.map(employee => ({
+          employeeId: employee.employeeId,
+          username: employee.username,
+          email: employee.email,
+          totalRetards: employee.totalRetards,
+          totalHeuresRequises: employee.totalHeuresRequises,
+          timeTrackingDetails: employee.timeTrackingDetails,
+          projects: employee.projects,
+        }));
+        setTimeTrackingData(timeTrackingInfo);
 
         const employeeOptions = [{ id: 'all', name: 'Tous les employés' }];
-        usersData.forEach(user => {
-          employeeOptions.push({ id: user.id, name: user.username });
+        teamStats.forEach(employee => {
+          employeeOptions.push({ id: employee.employeeId, name: employee.username });
         });
         setEmployeeList(employeeOptions);
 
+        const usersData = teamStats.map(emp => ({ id: emp.employeeId, username: emp.username }));
+        setUsers(usersData);
+
         setLoading(false);
       } catch (err) {
-        setError('Erreur lors de la récupération des données.');
+        setError('Erreur lors de la récupération des données de suivi du temps.');
         console.error(err);
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [managerId]);
 
   const filteredData = useMemo(() => {
     return selectedEmployeeId === 'all'
-      ? retardData.filter(item => !searchResults.length || searchResults.some(res => res.id === item.id))
-      : retardData.filter(item => item.userId === parseInt(selectedEmployeeId) && (!searchResults.length || searchResults.some(res => res.id === item.id)));
-  }, [retardData, selectedEmployeeId, searchResults]);
+      ? timeTrackingData.filter(item =>
+        !searchResults.length || searchResults.some(res => res.employeeId === item.employeeId)
+      )
+      : timeTrackingData.filter(
+        item =>
+          item.employeeId === parseInt(selectedEmployeeId) &&
+          (!searchResults.length || searchResults.some(res => res.employeeId === item.employeeId))
+      );
+  }, [timeTrackingData, selectedEmployeeId, searchResults]);
 
   useEffect(() => {
-    const nbrTotalRetards = filteredData.reduce((sum, item) => sum + item.nbreRetards, 0);
-    const periodeTotaleRetards = filteredData.reduce((sum, item) => sum + (item.heuresRequises || 0), 0);
+    const nbrTotalRetards = filteredData.reduce((sum, employee) => sum + employee.totalRetards, 0);
+    const periodeTotaleRetards = filteredData.reduce((sum, employee) => sum + employee.totalHeuresRequises, 0);
     setTotalRetards(nbrTotalRetards);
     setTotalHeuresRequises(periodeTotaleRetards);
   }, [filteredData]);
-
-  const getUsername = (userId) => {
-    const user = users.find(user => user.id === userId);
-    return user ? user.username : `Employé ${userId}`;
-  };
 
   const handleEmployeeChange = (event) => {
     setSelectedEmployeeId(event.target.value);
@@ -76,11 +91,24 @@ const GestionRetards = () => {
       setLoading(true);
       setError(null);
       try {
-        const results = await timeTrackingService.getRetardsByUser(username);
-        setSearchResults(results);
+        const results = await timeTrackingService.getTeamStats(managerId);
+        const filteredResults = results.filter(employee =>
+          employee.username.toLowerCase().includes(username.toLowerCase())
+        );
+        // Mappez les résultats filtrés pour correspondre à la structure de timeTrackingData
+        const searchData = filteredResults.map(employee => ({
+          employeeId: employee.employeeId,
+          username: employee.username,
+          email: employee.email,
+          totalRetards: employee.totalRetards,
+          totalHeuresRequises: employee.totalHeuresRequises,
+          timeTrackingDetails: employee.timeTrackingDetails,
+          projects: employee.projects,
+        }));
+        setSearchResults(searchData);
         setLoading(false);
       } catch (err) {
-        setError(`Erreur lors de la recherche des retards pour "${username}".`);
+        setError(`Erreur lors de la recherche des données pour "${username}".`);
         console.error(err);
         setLoading(false);
         setSearchResults([]);
@@ -101,7 +129,7 @@ const GestionRetards = () => {
         <Navbar />
         <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
           <div className="container-fluid mt-4">
-            <p>Chargement des données...</p>
+            <p>Chargement des données de suivi du temps...</p>
           </div>
         </div>
       </div>
@@ -126,13 +154,13 @@ const GestionRetards = () => {
       <Navbar />
       <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
         <div className="container-fluid mt-4">
-          <h1>Suivi des Retards</h1>
+          <h1>Suivi du Temps de l'Équipe</h1>
 
           <div className="row mb-4">
             <div className="col-md-6">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Nombre Total de Retards</h5>
+                  <h5 className="card-title">Nombre Total de Retards de l'Équipe</h5>
                   <p className="card-text">{totalRetards}</p>
                 </div>
               </div>
@@ -140,7 +168,7 @@ const GestionRetards = () => {
             <div className="col-md-6">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">Période Totale des Retards (Heures)</h5>
+                  <h5 className="card-title">Total des Heures Requises de l'Équipe</h5>
                   <p className="card-text">{totalHeuresRequises}</p>
                 </div>
               </div>
@@ -149,7 +177,7 @@ const GestionRetards = () => {
 
           <div className="card mb-4">
             <div className="card-body">
-              <h5 className="card-title">Filtrer et Rechercher</h5>
+              <h5 className="card-title">Filtrer et Rechercher les Employés</h5>
               <div className="mb-3">
                 <label htmlFor="employeeFilter" className="form-label">Filtrer par employé :</label>
                 <select
@@ -164,7 +192,7 @@ const GestionRetards = () => {
                 </select>
               </div>
               <div className="mb-2">
-                <label htmlFor="searchUsername" className="form-label">Rechercher par employé :</label>
+                <label htmlFor="searchUsername" className="form-label">Rechercher par nom d'utilisateur :</label>
                 <input
                   type="text"
                   className="form-control"
@@ -184,38 +212,58 @@ const GestionRetards = () => {
 
           <div className="card mb-4">
             <div className="card-body">
-              <h5 className="card-title">Détails des Retards</h5>
+              <h5 className="card-title">Détails du Suivi du Temps des Employés</h5>
               <h6 className="mb-3">
                 {selectedEmployeeId !== 'all'
-                  ? `Retards pour ${employeeList.find(e => e.id === selectedEmployeeId)?.name || 'Employé non trouvé'}`
+                  ? `Suivi du temps pour ${employeeList.find(e => e.id === selectedEmployeeId)?.name || 'Employé non trouvé'}`
                   : searchResults.length > 0
                     ? `Résultats de la recherche pour "${searchUsername}"`
-                    : 'Tous les retards'}
+                    : 'Suivi du temps pour tous les employés'}
               </h6>
               <div className="table-responsive">
                 <table className="table table-striped table-bordered">
                   <thead>
                     <tr>
-                      <th>ID</th>
                       <th>Employé</th>
-                      <th>Nombre de Retards</th>
-                      <th>Date de Début</th>
-                      <th>Date de Fin</th>
-                      <th>Heures Requises</th>
+                      <th>Projets</th>
+                      <th>Total Retards</th>
+                      <th>Total Heures Requises</th>
+                      <th>Détails du Suivi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredData.map(retard => (
-                      <tr key={retard.id}>
-                        <td>{retard.id}</td>
-                        <td>{getUsername(retard.userId)}</td>
-                        <td>{retard.nbreRetards}</td>
-                        <td>{retard.startDate}</td>
-                        <td>{retard.endDate}</td>
-                        <td>{retard.heuresRequises}</td>
+                    {filteredData.map(employee => (
+                      <tr key={employee.employeeId}>
+                        <td>{employee.username}</td>
+                        <td>
+                          {employee.projects.map(project => (
+                            <div key={project.project_id}>{project.project_name}</div>
+                          ))}
+                        </td>
+                        <td>{employee.totalRetards}</td>
+                        <td>{employee.totalHeuresRequises}</td>
+                        <td>
+                          {employee.timeTrackingDetails.length > 0 ? (
+                            <ul>
+                              {employee.timeTrackingDetails.map(track => (
+                                <li key={track.id}>
+                                  Du {new Date(track.startDate).toLocaleDateString()} au{' '}
+                                  {new Date(track.endDate).toLocaleDateString()}:{' '}
+                                  {track.heuresRequises} heures (Retards: {track.nbreRetards})
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            'Aucun retard'
+                          )}
+                        </td>
                       </tr>
                     ))}
-                    {filteredData.length === 0 && <tr><td colSpan="6">Aucun retard trouvé pour la sélection.</td></tr>}
+                    {filteredData.length === 0 && (
+                      <tr>
+                        <td colSpan="5">Aucune donnée de suivi du temps trouvée pour la sélection.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -227,4 +275,4 @@ const GestionRetards = () => {
   );
 };
 
-export default GestionRetards;
+export default TimeTrackingManager;
