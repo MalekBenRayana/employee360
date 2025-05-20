@@ -3,6 +3,7 @@ import Navbar from '../Navbar';
 import '../../assets/styles/layout.css';
 import { LayoutContext } from '../../contexts/LayoutContext';
 import timeTrackingService from '../../services/timeTrackingService';
+import { useAuth } from '../../auth/AuthContext';
 
 const TimeTrackingManager = () => {
   const { collapsed } = useContext(LayoutContext);
@@ -17,16 +18,33 @@ const TimeTrackingManager = () => {
   const [totalRetards, setTotalRetards] = useState(0);
   const [totalHeuresRequises, setTotalHeuresRequises] = useState(0);
 
-  // Supposons que vous avez un moyen de récupérer l'ID du manager connecté
-  const [managerId] = useState(5); // Remplacez par la logique réelle pour obtenir l'ID du manager
+  const { userId, role, authLoading } = useAuth();
+  const managerId = userId;
 
   useEffect(() => {
     const fetchData = async () => {
+
+        if (authLoading) {
+        return;
+      }
+
+      if (!managerId) {
+        setLoading(false);
+        setError("L'ID du manager n'est pas disponible après le chargement de l'authentification.");
+        return;
+      }
+
+      if (role !== 'manager') {
+          setLoading(false);
+          setError("Accès non autorisé. Vous n'avez pas le rôle de manager.");
+          return;
+      }
+
       setLoading(true);
       setError(null);
       try {
         const teamStats = await timeTrackingService.getTeamStats(managerId);
-        // Mapper les données pour extraire les informations de suivi du temps
+
         const timeTrackingInfo = teamStats.map(employee => ({
           employeeId: employee.employeeId,
           username: employee.username,
@@ -56,19 +74,25 @@ const TimeTrackingManager = () => {
     };
 
     fetchData();
-  }, [managerId]);
+  }, [managerId, role, authLoading]);
 
   const filteredData = useMemo(() => {
-    return selectedEmployeeId === 'all'
-      ? timeTrackingData.filter(item =>
-        !searchResults.length || searchResults.some(res => res.employeeId === item.employeeId)
-      )
-      : timeTrackingData.filter(
-        item =>
-          item.employeeId === parseInt(selectedEmployeeId) &&
-          (!searchResults.length || searchResults.some(res => res.employeeId === item.employeeId))
-      );
-  }, [timeTrackingData, selectedEmployeeId, searchResults]);
+    
+    
+    let currentData = timeTrackingData;
+
+    if (searchUsername.trim() && searchResults.length > 0) {
+      const searchedEmployeeIds = new Set(searchResults.map(res => res.employeeId));
+      currentData = currentData.filter(item => searchedEmployeeIds.has(item.employeeId));
+    }
+
+    if (selectedEmployeeId !== 'all') {
+      currentData = currentData.filter(item => item.employeeId === parseInt(selectedEmployeeId));
+    }
+
+    return currentData;
+  }, [timeTrackingData, selectedEmployeeId, searchUsername, searchResults]);
+
 
   useEffect(() => {
     const nbrTotalRetards = filteredData.reduce((sum, employee) => sum + employee.totalRetards, 0);
@@ -87,15 +111,17 @@ const TimeTrackingManager = () => {
     const username = event.target.value;
     setSearchUsername(username);
     setSelectedEmployeeId('all');
+
     if (username.trim()) {
       setLoading(true);
       setError(null);
       try {
+
         const results = await timeTrackingService.getTeamStats(managerId);
         const filteredResults = results.filter(employee =>
           employee.username.toLowerCase().includes(username.toLowerCase())
         );
-        // Mappez les résultats filtrés pour correspondre à la structure de timeTrackingData
+
         const searchData = filteredResults.map(employee => ({
           employeeId: employee.employeeId,
           username: employee.username,
@@ -122,6 +148,23 @@ const TimeTrackingManager = () => {
     setSearchUsername('');
     setSearchResults([]);
   };
+
+
+  if (authLoading) {
+    return (
+      <div className="app-layout">
+        <Navbar />
+        <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
+          <div className="container-fluid mt-4">
+            <p>Vérification de l'authentification...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+
+
 
   if (loading) {
     return (

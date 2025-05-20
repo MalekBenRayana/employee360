@@ -255,7 +255,7 @@ const EmployeeDashboard = () => {
             <Navbar />
             <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
                 <div className="container-fluid py-4">
-                    <h1 className="mb-4" style={{ color: '#333' }}>Tableau de Bord de {employeeName}</h1>
+                    <h1 className="mb-4" style={{ color: '#333' }}>Mon tableau de </h1>
 
                     <div className="row mb-4">
                         <div className="col-md-4">

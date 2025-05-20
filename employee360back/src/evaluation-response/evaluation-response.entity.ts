@@ -5,10 +5,12 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { EvaluationSession } from '../evaluation-session/evaluation-session.entity';
 import { User } from '../user/user.entity';
 import { FormResponseValue } from 'src/form-response-value/form-response-value.entity';
+import { AiEvaluationReport } from 'src/ai-evaluation-report/ai-evaluation-report.entity';
 
 @Entity('evaluation_responses')
 export class EvaluationResponse {
@@ -44,6 +46,9 @@ export class EvaluationResponse {
     },
   )
   responseValues: FormResponseValue[];
+
+  @OneToOne(() => AiEvaluationReport, (aiReport) => aiReport.evaluationResponse)
+  aiReport: AiEvaluationReport;
 
   @Column({ type: 'float', nullable: true })
   score: number;

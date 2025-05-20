@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { fetchFormToRespond, submitResponse } from '../../services/evaluationResponseService';
 
+// Composant pour les questions de type 'text' et 'text_short' (input simple ligne)
 const TextQuestion = ({ question, value, onChange }) => (
   <div className="form-group-innovative">
     <label htmlFor={`question-${question.id}`} className="form-label-innovative">
@@ -30,6 +31,7 @@ const TextQuestion = ({ question, value, onChange }) => (
   </div>
 );
 
+// Composant pour les questions de type 'textarea' et 'text_long' (zone de texte multi-lignes)
 const TextAreaQuestion = ({ question, value, onChange }) => (
   <div className="form-group-innovative">
     <label htmlFor={`question-${question.id}`} className="form-label-innovative">
@@ -42,7 +44,7 @@ const TextAreaQuestion = ({ question, value, onChange }) => (
     <textarea
       className="form-control-innovative"
       id={`question-${question.id}`}
-      rows="4"
+      rows="4" // Définit le nombre de lignes visibles initialement
       value={value || ''}
       onChange={onChange}
     />
@@ -339,6 +341,7 @@ const EvaluationFormResponder = () => {
                   case 'text_short':
                     return <TextQuestion key={question.id} question={question} value={responseValue} onChange={(e) => handleResponseChange(e.target.value)} />;
                   case 'textarea':
+                  case 'text_long': // **Ajout de 'text_long' ici**
                     return <TextAreaQuestion key={question.id} question={question} value={responseValue} onChange={(e) => handleResponseChange(e.target.value)} />;
                   case 'radio':
                     return <RadioQuestion key={question.id} question={question} value={responseValue} onChange={(e) => handleResponseChange(e.target.value)} />;

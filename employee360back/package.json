@@ -23,9 +23,10 @@
     "typeorm:generate": "typeorm migration:generate -n"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@huggingface/transformers": "^3.5.1",
     "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
@@ -48,6 +49,7 @@
     "googleapis": "^148.0.0",
     "nodemailer": "^6.10.0",
     "onnxruntime-node": "^1.22.0",
+    "openai": "^4.100.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

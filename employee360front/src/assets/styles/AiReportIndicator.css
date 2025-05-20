@@ -1,0 +1,49 @@
+/* src/assets/styles/AiReportIndicator.css */
+
+.ai-report-indicator-button {
+  background-color: #007bff; /* Bleu standard pour les actions */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espace entre l'icône et le texte */
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-report-indicator-button:hover {
+  background-color: #0056b3; /* Bleu plus foncé au survol */
+  transform: translateY(-1px); /* Léger effet de soulèvement */
+}
+
+.ai-report-indicator-button:active {
+  background-color: #004085;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.ai-report-icon {
+  /* Style spécifique pour l'icône si nécessaire */
+  font-size: 1.2em; /* Rend l'icône légèrement plus grande */
+}
+
+/* Style pour le texte "N/A (AI)" si pas de rapport */
+.no-ai-report-info {
+  color: #6c757d; /* Couleur grise pour indiquer l'absence */
+  font-style: italic;
+  font-size: 0.85em;
+  padding: 8px 12px; /* Pour aligner avec le bouton */
+  /* Ajoutez des styles si vous voulez qu'il ressemble à un bouton désactivé */
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px; /* S'assurer qu'il a une largeur minimale constante */
+}

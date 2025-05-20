@@ -45,6 +45,7 @@ import ManagerProjectDetails from "./pages/ManagerProjectDetails"; // Importez l
 import TasksTrackingAdmin from './components/tasks-tracking-admin/TasksTrakingAdmin';
 import TasksTrackingEmployee from './components/tasks-tracking-employee/TasksTrackingEmployee'; // Importez le nouveau composant
 import TimeTrackingManager from './components/time-traking-manager/TimeTrackingManager';
+import TaskTrackingManager from './components/tasks-traking-manager/TaskTrackingManager';
 
 const App = () => {
   const location = useLocation();
@@ -304,6 +305,10 @@ const App = () => {
               <Route
               path="/manager/time-tracking"
               element={<ProtectedRoute roleRequired="manager"><TimeTrackingManager /></ProtectedRoute>} />
+
+              <Route
+              path="/manager/task-tracking"
+              element={<ProtectedRoute roleRequired="manager"><TaskTrackingManager /></ProtectedRoute>} />
 
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>

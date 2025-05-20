@@ -153,7 +153,9 @@ export class TimeTrackingService {
       );
     }
 
-    const managedProjects = await this.projectRepository.findBy({ manager: { id: managerId } });
+    const managedProjects = await this.projectRepository.findBy({
+      manager: { id: managerId },
+    });
 
     if (!managedProjects || managedProjects.length === 0) {
       return []; // Le manager n'a pas de projets assignés
@@ -165,7 +167,9 @@ export class TimeTrackingService {
       const projectEmployees = await this.userRepository
         .createQueryBuilder('user')
         .innerJoin('user.projects', 'project')
-        .where('project.project_id = :projectId', { projectId: project.project_id })
+        .where('project.project_id = :projectId', {
+          projectId: project.project_id,
+        })
         .select(['user.id', 'user.username', 'user.email'])
         .leftJoinAndSelect('user.projects', 'assignedProject') // Charger la relation projects
         .getMany();
@@ -217,7 +221,8 @@ export class TimeTrackingService {
             numberOfDueDateViolations,
             totalViolationPeriod,
             taskEstimationDetails: taskEstimations,
-            projects: employee.projects.map(proj => ({ // Formatter les informations du projet
+            projects: employee.projects.map((proj) => ({
+              // Formatter les informations du projet
               project_id: proj.project_id,
               project_name: proj.project_name,
             })),
@@ -238,7 +243,7 @@ export class TimeTrackingService {
       relations: ['users'],
     });
 
-    if (!project || !project.users.some(user => user.id === employeeId)) {
+    if (!project || !project.users.some((user) => user.id === employeeId)) {
       throw new NotFoundException(
         `L'employé avec l'ID ${employeeId} n'appartient pas à l'équipe du manager avec l'ID ${managerId} (via les projets).`,
       );
@@ -278,7 +283,7 @@ export class TimeTrackingService {
       relations: ['users'],
     });
 
-    if (!project || !project.users.some(user => user.id === employeeId)) {
+    if (!project || !project.users.some((user) => user.id === employeeId)) {
       throw new NotFoundException(
         `L'employé avec l'ID ${employeeId} n'appartient pas à l'équipe du manager avec l'ID ${managerId} (via les projets).`,
       );

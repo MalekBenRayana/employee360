@@ -131,7 +131,7 @@ const Navbar = () => {
               )}
               {role === "manager" && (
                 <>
-                  <li><Link to="/manager/time-tracking">Suivi de l'équipe</Link></li> {/* Ajout pour le manager */}
+                  <li><Link to="/manager/time-tracking">Suivi de l'équipe</Link></li>
                 </>
               )}
             </ul>
@@ -154,6 +154,12 @@ const Navbar = () => {
               {role === "employee" && (
                 <>
                   <li><Link to="/employee/tasks">Mes Tâches</Link></li> {/* Ajout du lien pour l'employé */}
+                </>
+              )}
+
+              {role === "manager" && (
+                <>
+                  <li><Link to="/manager/task-tracking">Suivi des Tâches</Link></li>
                 </>
               )}
             </ul>

@@ -91,7 +91,7 @@ export class TimeTrackingController {
     return { total };
   }
 
-   @Get('team-stats/:managerId')
+  @Get('team-stats/:managerId')
   async getTeamStats(
     @Param('managerId', ParseIntPipe) managerId: number,
   ): Promise<any> {

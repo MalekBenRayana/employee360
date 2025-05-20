@@ -26,6 +26,8 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { EmployeeSelfEvaluationModule } from './employee-self-evaluation/employee-self-evaluation.module';
 import { TimeTrackingModule } from './time-tracking/time-tracking.module';
 import { TaskEstimationModule } from './tasks-estimations/tasks-estimations.module';
+import { AiScoringModule } from './ai-scoring/ai-scoring.module';
+import { AiEvaluationReportModule } from './ai-evaluation-report/ai-evaluation-report.module';
 
 @Module({
   imports: [
@@ -71,6 +73,8 @@ import { TaskEstimationModule } from './tasks-estimations/tasks-estimations.modu
     EmployeeSelfEvaluationModule,
     TimeTrackingModule,
     TaskEstimationModule,
+    AiScoringModule,
+    AiEvaluationReportModule,
   ],
 })
 export class AppModule {}
