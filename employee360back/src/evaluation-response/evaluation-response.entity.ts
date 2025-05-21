@@ -50,6 +50,8 @@ export class EvaluationResponse {
   @OneToOne(() => AiEvaluationReport, (aiReport) => aiReport.evaluationResponse)
   aiReport: AiEvaluationReport;
 
+  
+
   @Column({ type: 'float', nullable: true })
   score: number;
 

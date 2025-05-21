@@ -63,7 +63,7 @@ const deleteEvaluationSession = async (sessionId) => {
 
 const fetchAssignedEvaluationSessionsByStatus = async (employeeId, status) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/evaluation-sessions/assigned/${15}?status=${status}`);
+        const response = await axios.get(`${API_BASE_URL}/evaluation-sessions/assigned/${employeeId}?status=${status}`);
         return response.data;
     } catch (error) {
         console.error(`Erreur lors de la récupération des sessions assignées à l'employé ${employeeId} avec le statut ${status}:`, error);
@@ -73,7 +73,7 @@ const fetchAssignedEvaluationSessionsByStatus = async (employeeId, status) => {
 
 const fetchSelfEvaluationSessions = async (employeeId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/evaluation-sessions/self/${15}`);
+        const response = await axios.get(`${API_BASE_URL}/evaluation-sessions/self/${employeeId}`);
         return response.data;
     } catch (error) {
         console.error(`Erreur lors de la récupération des sessions d'auto-évaluation pour l'employé ${employeeId}:`, error);

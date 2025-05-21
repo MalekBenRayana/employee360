@@ -41,11 +41,14 @@ import SuiviRetardsEmployee from "./components/time-tracking-employee/SuiviRetar
 import CongesEmployee from "./components/time-tracking-employee/CongesEmp";
 import DeplacementsEmployee from "./components/time-tracking-employee/DeplacementsEmp";
 import AppHeader from './components/AppHeader';
-import ManagerProjectDetails from "./pages/ManagerProjectDetails"; // Importez le nouveau composant
+import ManagerProjectDetails from "./pages/ManagerProjectDetails";
 import TasksTrackingAdmin from './components/tasks-tracking-admin/TasksTrakingAdmin';
-import TasksTrackingEmployee from './components/tasks-tracking-employee/TasksTrackingEmployee'; // Importez le nouveau composant
+import TasksTrackingEmployee from './components/tasks-tracking-employee/TasksTrackingEmployee';
 import TimeTrackingManager from './components/time-traking-manager/TimeTrackingManager';
 import TaskTrackingManager from './components/tasks-traking-manager/TaskTrackingManager';
+// Importez le nouveau composant pour les rapports d'évaluation IA
+import EmployeeAiReportsPage from './pages/EmployeeAiReportsPage';
+
 
 const App = () => {
   const location = useLocation();
@@ -126,6 +129,15 @@ const App = () => {
               element={
                 <ProtectedRoute roleRequired="employee">
                   <SelfEvaluationView />
+                </ProtectedRoute>
+              }
+            />
+            {/* Nouvelle route pour les rapports d'évaluation IA */}
+            <Route
+              path="/my-ai-reports/:employeeId"
+              element={
+                <ProtectedRoute roleRequired="employee">
+                  <EmployeeAiReportsPage />
                 </ProtectedRoute>
               }
             />
@@ -284,7 +296,7 @@ const App = () => {
 
             <Route
               path="/employee/tasks"
-              element={<ProtectedRoute roleRequired="employee"><TasksTrackingEmployee /></ProtectedRoute>} /> {/* Ajout de la route pour l'employé */}
+              element={<ProtectedRoute roleRequired="employee"><TasksTrackingEmployee /></ProtectedRoute>} />
 
             <Route
               path="/admin/retards"

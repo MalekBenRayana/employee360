@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import dashboardService from '../services/dashboard.service';
+import dashboardService from '../services/dashboard.service'; // Assurez-vous que ce service existe et fonctionne
 import Navbar from '../components/Navbar';
-import { LayoutContext } from '../contexts/LayoutContext';
+import { LayoutContext } from '../contexts/LayoutContext'; // Contexte pour la mise en page
 import {
     ResponsiveContainer,
     BarChart,
@@ -14,26 +14,34 @@ import {
     LineChart,
     Line
 } from 'recharts';
-import { FaChartBar, FaListOl, FaChartLine, FaChartPie } from 'react-icons/fa';
-import axios from '../axios';
-import { useAuth } from '../auth/AuthContext';
-import '../assets/styles/EmployeeDashboard.css';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartJSTooltip, Legend as ChartJSLegend } from 'chart.js/auto';
+import { FaChartBar, FaListOl, FaChartLine, FaChartPie, FaFileAlt, FaBrain, FaRobot, FaMicrochip } from 'react-icons/fa'; // Importez FaFileAlt, FaBrain, FaRobot, FaMicrochip
+import axios from '../axios'; // Votre instance configurée d'Axios
+import { useAuth } from '../auth/AuthContext'; // Contexte d'authentification pour récupérer le token et l'ID utilisateur
+import '../assets/styles/EmployeeDashboard.css'; // Styles spécifiques au tableau de bord
+import { Pie } from 'react-chartjs-2'; // Pour les graphiques en secteurs
+import { Chart as ChartJS, ArcElement, Tooltip as ChartJSTooltip, Legend as ChartJSLegend } from 'chart.js/auto'; // Inscription des éléments Chart.js
+import { Link } from 'react-router-dom';
 
 ChartJS.register(ArcElement, ChartJSTooltip, ChartJSLegend);
 
-// Composant pour afficher une carte avec un chiffre important
-const InfoCard = ({ title, value, icon }) => (
+// Composant pour afficher une carte avec un chiffre important ou un lien
+const InfoCard = ({ title, value, icon, to }) => (
     <div className="infoCard">
         <div className="icon-container">{icon}</div>
         <div className="text-container">
             <h3 className="title">{title}</h3>
-            <p className="value">{value}</p>
+            {to ? (
+                <Link to={to} className="value-link">
+                    <p className="value">{value}</p>
+                </Link>
+            ) : (
+                <p className="value">{value}</p>
+            )}
         </div>
     </div>
 );
 
+// Composant pour le graphique d'évolution du score moyen
 const ScoreHistoryChart = ({ data }) => {
     const chartData = data?.dates?.map((date, index) => ({
         date: date,
@@ -58,9 +66,11 @@ const ScoreHistoryChart = ({ data }) => {
     );
 };
 
+// Composant pour le graphique de performance par projet et point
 const ProjectPerformanceChart = ({ data }) => {
     const projects = [...new Set(data.map(item => item.projectName))];
     const performancePointsNames = [...new Set(data.map(item => item.performancePointName).filter(name => name))];
+    
     const chartData = projects.map(projectName => {
         const projectData = { name: projectName };
         performancePointsNames.forEach(pointName => {
@@ -103,6 +113,7 @@ const ProjectPerformanceChart = ({ data }) => {
     );
 };
 
+// Composant pour le graphique en secteurs des scores moyens par projet
 const ProjectAverageScorePieChart = ({ data }) => {
     const projectChartData = {
         labels: data.map(score => score.projectName),
@@ -157,6 +168,7 @@ const ProjectAverageScorePieChart = ({ data }) => {
     );
 };
 
+// Composant principal du Tableau de Bord de l'Employé
 const EmployeeDashboard = () => {
     const [projectScores, setProjectScores] = useState([]);
     const [projectPerformanceData, setProjectPerformanceData] = useState([]);
@@ -166,9 +178,13 @@ const EmployeeDashboard = () => {
     const [error, setError] = useState(null);
     const { collapsed } = useContext(LayoutContext);
     const { token, loading: authLoading } = useAuth();
+
+    const [latestAiReportSummary, setLatestAiReportSummary] = useState(null);
+    const [employeeId, setEmployeeId] = useState(null);
     const [totalEvaluations, setTotalEvaluations] = useState(0);
     const [employeeName, setEmployeeName] = useState('');
-    const [averageScore, setAverageScore] = useState(0); // Exemple d'une autre info clé
+    const [averageScore, setAverageScore] = useState(0);
+    const [aiReportsCount, setAiReportsCount] = useState(0); // New state for AI reports count
 
     useEffect(() => {
         const fetchEmployeeInfo = async () => {
@@ -190,7 +206,6 @@ const EmployeeDashboard = () => {
         fetchEmployeeInfo();
     }, [token, authLoading]);
 
-    const [employeeId, setEmployeeId] = useState(null);
     useEffect(() => {
         const fetchDashboardData = async () => {
             if (employeeId) {
@@ -198,12 +213,11 @@ const EmployeeDashboard = () => {
                 setError(null);
                 try {
                     const fullHistoryData = await dashboardService.getEvaluateeFullHistory(employeeId);
-                    console.log("Historique complet récupéré :", fullHistoryData);
                     setTotalEvaluations(fullHistoryData?.evaluations?.length || 0);
 
                     const statsData = await dashboardService.getEvaluateeStats(employeeId);
                     setStats(statsData);
-                    setAverageScore(statsData?.averageScore || 0); // Exemple: récupérer le score moyen
+                    setAverageScore(statsData?.averageScore || 0);
 
                     const historyData = await dashboardService.getEvaluateeScoreHistory(employeeId);
                     setScoreHistory(historyData);
@@ -226,6 +240,19 @@ const EmployeeDashboard = () => {
                     }));
                     setProjectScores(projectAverages);
 
+                    const aiReportsResponse = await axios.get(`/ai-evaluation-reports/by-evaluatee/${employeeId}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    
+                    if (aiReportsResponse.data && aiReportsResponse.data.length > 0) {
+                        setAiReportsCount(aiReportsResponse.data.length); // Set the count
+                        // We will no longer display a summary, but a count or a generic message.
+                        setLatestAiReportSummary(`${aiReportsResponse.data.length} rapports disponibles`); 
+                    } else {
+                        setLatestAiReportSummary("Aucun rapport disponible");
+                        setAiReportsCount(0);
+                    }
+
                 } catch (err) {
                     console.error("Erreur lors de la récupération des données du tableau de bord:", err);
                     setError(err.message || 'Erreur lors de la récupération des données du tableau de bord.');
@@ -236,18 +263,39 @@ const EmployeeDashboard = () => {
         };
 
         fetchDashboardData();
-    }, [employeeId]);
+    }, [employeeId, token]);
 
     if (loading) {
-        return <div>Chargement des données du tableau de bord...</div>;
+        return (
+            <div className="app-layout">
+                <Navbar />
+                <div className="main-content">
+                    <div className="container-fluid py-4">Chargement des données du tableau de bord...</div>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div>Erreur: {error}</div>;
+        return (
+            <div className="app-layout">
+                <Navbar />
+                <div className="main-content">
+                    <div className="container-fluid py-4">Erreur: {error}</div>
+                </div>
+            </div>
+        );
     }
 
-    if (!stats || !scoreHistory || !projectScores || !projectPerformanceData) {
-        return <div>Aucune donnée de tableau de bord disponible.</div>;
+    if (!stats && !scoreHistory && !projectScores.length && !projectPerformanceData.length && aiReportsCount === 0) {
+        return (
+            <div className="app-layout">
+                <Navbar />
+                <div className="main-content">
+                    <div className="container-fluid py-4">Aucune donnée de tableau de bord disponible.</div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -255,8 +303,9 @@ const EmployeeDashboard = () => {
             <Navbar />
             <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
                 <div className="container-fluid py-4">
-                    <h1 className="mb-4" style={{ color: '#333' }}>Mon tableau de </h1>
+                    <h1 className="mb-4" style={{ color: '#333' }}>Mon tableau de bord</h1>
 
+                    {/* Section des InfoCards */}
                     <div className="row mb-4">
                         <div className="col-md-4">
                             <InfoCard
@@ -274,8 +323,20 @@ const EmployeeDashboard = () => {
                                 />
                             </div>
                         )}
+                        <div className="col-md-4">
+                            <InfoCard
+                                title="Rapports d'Évaluation IA"
+                                // Display the count if available, otherwise a generic message
+                                value={aiReportsCount > 0 ? `${aiReportsCount} rapports disponibles` : "Aucun rapport disponible"}
+                                // Choose an icon that is visually appealing and relevant to AI
+                                // FaBrain for intelligence, FaRobot for AI entity, FaMicrochip for processing
+                                icon={<FaBrain size={24} color="#f39c12" />} // Changed icon to FaBrain
+                                to={employeeId ? `/my-ai-reports/${employeeId}` : '#'} 
+                            />
+                        </div>
                     </div>
 
+                    {/* Section des graphiques */}
                     <div className="row">
                         {scoreHistory?.dates?.length > 0 && scoreHistory?.scores?.length > 0 && (
                             <div className="col-md-6 mb-4">

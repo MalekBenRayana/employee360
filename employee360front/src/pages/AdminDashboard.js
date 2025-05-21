@@ -7,51 +7,76 @@ import {
     CircularProgress,
     Alert,
     Box,
+    useTheme,
 } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell } from 'recharts';
-import { blueGrey, green, red, amber, grey } from '@mui/material/colors';
 import { LayoutContext } from '../contexts/LayoutContext';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
 import { Rocket, Activity, Users, CheckCircle, TrendingUp, LayoutDashboard, PercentCircle, Clock } from 'lucide-react';
 import adminDashboardService from '../services/adminDashboardService';
 
-const primary = blueGrey[700];
-const secondary = blueGrey[500];
-const success = green[500];
-const warning = amber[700];
-const error = red[500];
-const muted = blueGrey[300];
-const info = blueGrey[300];
-const dark = grey[800];
+// Define a more cohesive and accessible color palette with user-specified colors
+const palette = {
+    primary: '#68b3e8', // Bleu clair
+    secondary: '#9e70cf', // Violet/Magenta
+    success: '#00a651', // Vert
+    warning: '#f7941d', // Orange
+    error: '#f26c4f', // Rouge/Orange vif
+    info: '#a7d35d', // Vert clair/Lime
+    dark: '#333333', // Dark text for contrast
+    text: '#555555', // General text color
+    background: '#f8f8f8', // Light background for cards and main content
+    chartAccent1: '#68b3e8', // Bleu clair
+    chartAccent2: '#9e70cf', // Violet/Magenta
+    chartAccent3: '#f7941d', // Orange
+    chartAccent4: '#f26c4f', // Rouge/Orange vif
+    chartAccent5: '#ed1c6b', // Rose vif/Fuchsia
+    chartAccent6: '#fff200', // Jaune
+    chartAccent7: '#a7d35d', // Vert clair/Lime
+    chartAccent8: '#00a651', // Vert
+};
 
 const COLORS_BAR = [
-  'rgba(255, 99, 132, 0.8)',
-  'rgba(54, 162, 235, 0.8)',
-  'rgba(255, 206, 86, 0.8)',
-  'rgba(75, 192, 192, 0.8)',
-  'rgba(153, 102, 255, 0.8)',
-  'rgba(255, 159, 64, 0.8)',
-  'rgba(128, 0, 128, 0.8)',
-  'rgba(0, 128, 0, 0.8)', // Ajoute d'autres couleurs uniques
-  'rgba(255, 0, 0, 0.8)',
-  // Tu peux ajouter d'autres couleurs ici
-];const COLORS_LINE = [primary, success, warning, error, secondary, muted, info, dark];
-const COLORS_PIE = [success, muted, warning, error, info];
+    palette.chartAccent1,
+    palette.chartAccent2,
+    palette.chartAccent3,
+    palette.chartAccent4,
+    palette.chartAccent5,
+    palette.chartAccent6,
+    palette.chartAccent7,
+    palette.chartAccent8,
+];
 
-const chartStyle = {
-    fontSize: '0.9em',
+const COLORS_LINE = [
+    palette.chartAccent1,
+    palette.chartAccent2,
+    palette.chartAccent3,
+    palette.chartAccent4,
+    palette.chartAccent5,
+];
+
+const COLORS_PIE = [
+    palette.success,
+    palette.info,
+    palette.warning,
+    palette.error,
+    palette.primary,
+];
+
+const chartTextStyle = {
+    fontSize: '0.85em',
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    color: grey[700],
+    color: palette.text,
 };
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } },
-    hover: { scale: 1.03, boxShadow: '0px 6px 18px rgba(0, 0, 0, 0.15)' },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+    hover: { scale: 1.02, boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.12)' },
 };
 
-const KeyIndicatorCard = ({ title, value, color = primary, icon: Icon }) => {
+const KeyIndicatorCard = ({ title, value, color, icon: Icon }) => {
     return (
         <motion.div
             variants={cardVariants}
@@ -60,12 +85,16 @@ const KeyIndicatorCard = ({ title, value, color = primary, icon: Icon }) => {
             whileHover="hover"
         >
             <Card
-                elevation={4}
+                elevation={6}
                 sx={{
                     transition: 'all 0.3s ease',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    background: `linear-gradient(135deg, ${color} 30%, ${color}DD 90%)`,
+                    color: '#fff',
                 }}
             >
                 <CardContent sx={{
@@ -73,19 +102,20 @@ const KeyIndicatorCard = ({ title, value, color = primary, icon: Icon }) => {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     height: '100%',
-                    alignItems: 'flex-start'
+                    alignItems: 'flex-start',
+                    p: 3,
                 }}>
-                    <Typography variant="h6" color="textSecondary" gutterBottom sx={{ mb: 1 }}>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
                         {title}
                     </Typography>
-                    <Typography variant="h4" style={{ color, fontWeight: 600 }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, mt: 1 }}>
                         {value}
                     </Typography>
                     {Icon && (
                         <Icon
                             sx={{
-                                fontSize: 48,
-                                color,
+                                fontSize: 60,
+                                color: 'rgba(255,255,255,0.7)',
                                 mt: 2,
                                 alignSelf: 'flex-end'
                             }}
@@ -103,9 +133,15 @@ const ChartCard = ({ title, children }) => {
             variants={cardVariants}
             initial="hidden"
             animate="visible"
+            style={{ height: '100%' }}
         >
-            <Card elevation={4} sx={{ transition: 'all 0.3s ease' }}>
-                <CardContent>
+            <Card elevation={6} sx={{
+                transition: 'all 0.3s ease',
+                height: '100%',
+                borderRadius: '12px',
+                background: palette.background,
+            }}>
+                <CardContent sx={{ p: 3 }}>
                     <Typography
                         variant="h6"
                         gutterBottom
@@ -113,7 +149,9 @@ const ChartCard = ({ title, children }) => {
                             textAlign: 'center',
                             marginBottom: 3,
                             fontWeight: 600,
-                            color: dark
+                            color: palette.dark,
+                            borderBottom: `1px solid #e0e0e0`, // Subtle separator
+                            pb: 1.5,
                         }}
                     >
                         {title}
@@ -145,6 +183,7 @@ function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { collapsed } = useContext(LayoutContext);
+    const theme = useTheme();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -192,16 +231,40 @@ function AdminDashboard() {
         fetchData();
     }, []);
 
+    // Data transformation for 'Score Moyen par Type de Point (Toutes Périodes)'
+    const averageScoreByTypeData = performancePointScoreTrend
+        ? performancePointScoreTrend.map((item) => {
+            const totalScore = item.trend.reduce((sum, t) => sum + t.averageScore, 0);
+            const averageScore = item.trend.length > 0 ? parseFloat((totalScore / item.trend.length).toFixed(2)) : 0; // Format to 2 decimal places
+            return {
+                pointTypeName: item.pointTypeName,
+                averageScore: averageScore,
+            };
+        })
+        : [];
+
+    // Data for Evaluation Completion Rate Pie Chart
+    const completionRateData = [
+        { name: 'Complétées', value: evaluationCompletionRate || 0 },
+        { name: 'En cours/Non complétées', value: 100 - (evaluationCompletionRate || 0) },
+    ].filter(item => item.value > 0); // Only show slices with values
+
     if (loading) {
         return (
             <div className="app-layout">
                 <Navbar />
-                <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
-                    <div style={{ padding: 20 }}>
-                        <Typography variant="h4" gutterBottom>Tableau de Bord Admin</Typography>
-                        <CircularProgress />
-                    </div>
-                </div>
+                <Box
+                    className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: 'calc(100vh - 64px)',
+                        bgcolor: palette.background,
+                    }}
+                >
+                    <CircularProgress sx={{ color: palette.primary }} size={60} />
+                </Box>
             </div>
         );
     }
@@ -210,322 +273,281 @@ function AdminDashboard() {
         return (
             <div className="app-layout">
                 <Navbar />
-                <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
-                    <div style={{ padding: 20 }}>
-                        <Typography variant="h4" gutterBottom>Tableau de Bord Admin</Typography>
-                        <Alert severity="error">{`Erreur lors du chargement des données: ${error}`}</Alert>
-                    </div>
-                </div>
+                <Box
+                    className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}
+                    sx={{ p: 4, bgcolor: palette.background }}
+                >
+                    <Typography variant="h4" gutterBottom sx={{ color: palette.dark, fontWeight: 600 }}>Tableau de Bord Admin</Typography>
+                    <Alert severity="error" sx={{ mt: 3, borderRadius: '8px' }}>{`Erreur lors du chargement des données: ${error}`}</Alert>
+                </Box>
             </div>
         );
     }
 
-    const averageScoreByTypeData = performancePointScoreTrend
-        ? performancePointScoreTrend.map((item) => {
-            const totalScore = item.trend.reduce((sum, t) => sum + t.averageScore, 0);
-            const averageScore = item.trend.length > 0 ? totalScore / item.trend.length : 0;
-            return {
-                pointTypeName: item.pointTypeName,
-                averageScore: averageScore,
-            };
-        })
-        : [];
-
-    const completionRateData = [
-        { name: 'Complétées', value: evaluationCompletionRate || 0 },
-        { name: 'En cours/Non complétées', value: 100 - (evaluationCompletionRate || 0) },
-    ];
-
     return (
         <div className="app-layout">
             <Navbar />
-            <div className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}>
-                <div style={{ padding: 20 }}>
-                    <Typography variant="h4" gutterBottom sx={{
-                        color: dark,
-                        fontWeight: 600
-                    }}>Tableau de Bord Admin</Typography>
+            <Box
+                className={`main-content ${collapsed ? 'collapsed-sidebar' : 'open-sidebar'}`}
+                sx={{ p: 4, bgcolor: palette.background, minHeight: '100vh' }}
+            >
+                <Typography variant="h4" gutterBottom sx={{
+                    color: palette.dark,
+                    fontWeight: 700,
+                    mb: 4,
+                    borderBottom: `2px solid ${palette.primary}`,
+                    pb: 1,
+                }}>Tableau de Bord Admin</Typography>
 
-                    <Grid container spacing={4} mb={4}>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <KeyIndicatorCard
-                                title="Total Employés"
-                                value={totalEmployees}
-                                color={primary}
-                                icon={Users}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <KeyIndicatorCard
-                                title="Total Types de Points"
-                                value={totalPerformancePointTypes}
-                                color={secondary}
-                                icon={Activity}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={3}>
-                            <KeyIndicatorCard
-                                title="Total Évaluations"
-                                value={totalEvaluations}
-                                color={primary}
-                                icon={CheckCircle}
-                            />
-                        </Grid>
-                        
+                <Grid container spacing={4} mb={4}>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <KeyIndicatorCard
+                            title="Total Employés"
+                            value={totalEmployees}
+                            color={palette.primary}
+                            icon={Users}
+                        />
                     </Grid>
-
-                    <Grid container spacing={4}>
-                        {averageOverallScoreTrend && averageOverallScoreTrend.length > 0 && (
-                            <Grid item xs={12} md={6}>
-                                <ChartCard title="Tendance du Score Moyen Global">
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <LineChart data={averageOverallScoreTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="period"
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <YAxis
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 2px 8px rgba(248, 62, 84, 0.15)',
-                                                    padding: '15px',
-                                                }}
-                                                labelStyle={{ fontWeight: 'bold', color: '#333', fontSize: '1.1em' }}
-                                                itemStyle={{ color: '#555', fontSize: '1em' }}
-                                                animationDuration={200}
-                                            />
-                                            <Legend
-                                                wrapperStyle={{ ...chartStyle, marginTop: 20 }}
-                                                formatter={(value) => <span style={{ color: grey[700], fontSize: '1em' }}>{value}</span>}
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="averageScore"
-                                                stroke={COLORS_LINE[0]}
-                                                strokeWidth={4}
-                                                dot={{
-                                                    r: 8,
-                                                    stroke: COLORS_LINE[0],
-                                                    strokeWidth: 3,
-                                                    fill: '#fff',
-                                                }}
-                                                activeDot={{
-                                                    r: 12,
-                                                    stroke: COLORS_LINE[0],
-                                                    strokeWidth: 3,
-                                                    fill: '#fff',
-                                                }}
-                                                name="Score Moyen"
-                                                style={{
-                                                    transition: 'all 0.3s ease',
-                                                    animation: 'line-chart-animation 2s ease-in-out',
-                                                }}
-                                                isAnimationActive={true}
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </ChartCard>
-                            </Grid>
-                        )}
-
-                        {/* Tendance des Évaluations (Graphique à barres - Important)
-                        {evaluationsTrend && evaluationsTrend.length > 0 && (
-                            <Grid item xs={12} md={6}>
-                                <ChartCard title="Tendance des Évaluations">
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <BarChart data={evaluationsTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="period"
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <YAxis
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                                                    padding: '15px',
-                                                }}
-                                                labelStyle={{ fontWeight: 'bold', color: '#333', fontSize: '1.1em' }}
-                                                itemStyle={{ color: '#555', fontSize: '1em' }}
-                                                animationDuration={200}
-                                            />
-                                            <Legend
-                                                wrapperStyle={{ ...chartStyle, marginTop: 20 }}
-                                                formatter={(value) => <span style={{ color: grey[700], fontSize: '1em' }}>{value}</span>}
-                                            />
-                                            <Bar
-                                                dataKey="numberOfEvaluations"
-                                                fill={COLORS_BAR[1]}
-                                                name="Nombre d'Évaluations"
-                                                style={{
-                                                    transition: 'all 0.3s ease',
-                                                    animation: 'bar-chart-animation 1s ease',
-                                                }}
-                                                isAnimationActive={true}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </ChartCard>
-                            </Grid>
-                        )} */}
-
-                        {/* Scores Moyens par Type de Point (Période Actuelle) (Graphique à barres) */}
-                        {averageScoresByPerformancePoint && Object.keys(averageScoresByPerformancePoint).length > 0 && (
-                            <Grid item xs={12} md={6}>
-                                <ChartCard title="Scores Moyens par Type de Point (Période Actuelle)">
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <BarChart data={Object.entries(averageScoresByPerformancePoint).map(([name, score]) => ({ name, score }))}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="name"
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <YAxis
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                                                    padding: '15px',
-                                                }}
-                                                labelStyle={{ fontWeight: 'bold', color: '#333', fontSize: '1.1em' }}
-                                                itemStyle={{ color: '#555', fontSize: '1em' }}
-                                                animationDuration={200}
-                                            />
-                                            <Bar
-                                                dataKey="score"
-                                                fill={COLORS_BAR[2]}
-                                                name="Score Moyen"
-                                                style={{
-                                                    transition: 'all 0.3s ease',
-                                                    animation: 'bar-chart-animation 1s ease',
-                                                }}
-                                                isAnimationActive={true}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </ChartCard>
-                            </Grid>
-                        )}
-
-                        {employeeScoreDistribution && employeeScoreDistribution.length > 0 && (
-                            <Grid item xs={12} md={6}>
-                                <ChartCard title="Distribution des Scores des Employés (Période Actuelle)">
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <BarChart data={employeeScoreDistribution}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="range"
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <YAxis
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                                                    padding: '15px',
-                                                }}
-                                                labelStyle={{ fontWeight: 'bold', color: '#333', fontSize: '1.1em' }}
-                                                itemStyle={{ color: '#555', fontSize: '1em' }}
-                                                animationDuration={200}
-                                            />
-                                            <Bar
-                                                dataKey="count"
-                                                fill={COLORS_BAR[0]}
-                                                name="Nombre d'Employés"
-                                                style={{
-                                                    transition: 'all 0.3s ease',
-                                                    animation: 'bar-chart-animation 1s ease',
-                                                }}
-                                                isAnimationActive={true}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </ChartCard>
-                            </Grid>
-                        )}
-
-                        {performancePointScoreTrend && performancePointScoreTrend.length > 0 && (
-                            <Grid item xs={12} md={6}>
-                                <ChartCard title="Score Moyen par Type de Point (Toutes Périodes)">
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <BarChart data={averageScoreByTypeData}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="pointTypeName"
-                                                style={{ ...chartStyle, fontSize: '0.8em' }}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <YAxis
-                                                style={chartStyle}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#fff',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                                                    padding: '15px',
-                                                }}
-                                                labelStyle={{ fontWeight: 'bold', color: '#333', fontSize: '1em' }}
-                                                itemStyle={{ color: '#555', fontSize: '0.9em' }}
-                                                animationDuration={200}
-                                            />
-                                            <Bar
-                                                dataKey="averageScore"
-                                                fill={(entry, index) => COLORS_BAR[index % COLORS_BAR.length]}
-                                                name="Score Moyen"
-                                                style={{
-                                                    transition: 'all 0.3s ease',
-                                                    animation: 'bar-chart-animation 1s ease',
-                                                }}
-                                                isAnimationActive={true}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </ChartCard>
-                            </Grid>
-                        )}
+                    <Grid item xs={12} sm={6} md={3}>
+                        <KeyIndicatorCard
+                            title="Total Types de Points"
+                            value={totalPerformancePointTypes}
+                            color={palette.secondary}
+                            icon={Activity}
+                        />
                     </Grid>
-                </div>
-            </div>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <KeyIndicatorCard
+                            title="Total Évaluations"
+                            value={totalEvaluations}
+                            color={palette.success}
+                            icon={CheckCircle}
+                        />
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={4}>
+                    {/* Tendance du Score Moyen Global (Line Chart) */}
+                    {averageOverallScoreTrend && averageOverallScoreTrend.length > 0 && (
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Tendance du Score Moyen Global">
+                                <ResponsiveContainer width="100%" height={400}>
+                                    <LineChart
+                                        data={averageOverallScoreTrend}
+                                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e0e0" />
+                                        <XAxis
+                                            dataKey="period"
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            padding={{ left: 20, right: 20 }}
+                                        />
+                                        <YAxis
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            domain={['auto', 'auto']}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                border: `1px solid #cccccc`,
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                                padding: '12px',
+                                            }}
+                                            labelStyle={{ fontWeight: 'bold', color: palette.dark, fontSize: '1em' }}
+                                            itemStyle={{ color: palette.text, fontSize: '0.9em' }}
+                                            formatter={(value) => [`${value.toFixed(2)}`, 'Score Moyen']}
+                                        />
+                                        <Legend
+                                            wrapperStyle={{ ...chartTextStyle, marginTop: 20, textAlign: 'center' }}
+                                            formatter={(value) => <span style={{ color: palette.text, fontSize: '0.9em' }}>{value}</span>}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="averageScore"
+                                            stroke={COLORS_LINE[0]}
+                                            strokeWidth={3}
+                                            dot={{
+                                                r: 5,
+                                                stroke: COLORS_LINE[0],
+                                                strokeWidth: 2,
+                                                fill: '#fff',
+                                            }}
+                                            activeDot={{
+                                                r: 8,
+                                                stroke: COLORS_LINE[0],
+                                                strokeWidth: 3,
+                                                fill: '#fff',
+                                            }}
+                                            name="Score Moyen"
+                                            isAnimationActive={true}
+                                            animationDuration={1500}
+                                            animationEasing="ease-out"
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </ChartCard>
+                        </Grid>
+                    )}
+
+                    {/* Scores Moyens par Type de Point (Période Actuelle) (Bar Chart) */}
+                    {averageScoresByPerformancePoint && Object.keys(averageScoresByPerformancePoint).length > 0 && (
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Scores Moyens par Type de Point (Période Actuelle)">
+                                <ResponsiveContainer width="100%" height={400}>
+                                    <BarChart
+                                        data={Object.entries(averageScoresByPerformancePoint).map(([name, score]) => ({ name, score: parseFloat(score.toFixed(2)) }))}
+                                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e0e0" />
+                                        <XAxis
+                                            dataKey="name"
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            interval={0}
+                                            angle={-30}
+                                            textAnchor="end"
+                                            height={60}
+                                        />
+                                        <YAxis
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            domain={['auto', 'auto']}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                border: `1px solid #cccccc`,
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                                padding: '12px',
+                                            }}
+                                            labelStyle={{ fontWeight: 'bold', color: palette.dark, fontSize: '1em' }}
+                                            itemStyle={{ color: palette.text, fontSize: '0.9em' }}
+                                            formatter={(value) => [`${value.toFixed(2)}`, 'Score Moyen']}
+                                        />
+                                        <Bar
+                                            dataKey="score"
+                                            fill={COLORS_BAR[0]}
+                                            name="Score Moyen"
+                                            isAnimationActive={true}
+                                            animationDuration={1000}
+                                            animationEasing="ease-out"
+                                            radius={[8, 8, 0, 0]}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </ChartCard>
+                        </Grid>
+                    )}
+
+                    {/* Distribution des Scores des Employés (Période Actuelle) (Bar Chart) */}
+                    {employeeScoreDistribution && employeeScoreDistribution.length > 0 && (
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Distribution des Scores des Employés (Période Actuelle)">
+                                <ResponsiveContainer width="100%" height={400}>
+                                    <BarChart
+                                        data={employeeScoreDistribution}
+                                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e0e0" />
+                                        <XAxis
+                                            dataKey="range"
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                        />
+                                        <YAxis
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                border: `1px solid #cccccc`,
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                                padding: '12px',
+                                            }}
+                                            labelStyle={{ fontWeight: 'bold', color: palette.dark, fontSize: '1em' }}
+                                            itemStyle={{ color: palette.text, fontSize: '0.9em' }}
+                                        />
+                                        <Bar
+                                            dataKey="count"
+                                            fill={COLORS_BAR[1]}
+                                            name="Nombre d'Employés"
+                                            isAnimationActive={true}
+                                            animationDuration={1000}
+                                            animationEasing="ease-out"
+                                            radius={[8, 8, 0, 0]}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </ChartCard>
+                        </Grid>
+                    )}
+
+                    {/* Score Moyen par Type de Point (Toutes Périodes) (Bar Chart) */}
+                    {averageScoreByTypeData && averageScoreByTypeData.length > 0 && (
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Score Moyen par Type de Point (Toutes Périodes)">
+                                <ResponsiveContainer width="100%" height={400}>
+                                    <BarChart
+                                        data={averageScoreByTypeData}
+                                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e0e0e0" />
+                                        <XAxis
+                                            dataKey="pointTypeName"
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            interval={0}
+                                            angle={-30}
+                                            textAnchor="end"
+                                            height={60}
+                                        />
+                                        <YAxis
+                                            style={chartTextStyle}
+                                            tickLine={false}
+                                            axisLine={{ stroke: '#cccccc' }}
+                                            domain={['auto', 'auto']}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                border: `1px solid #cccccc`,
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                                padding: '12px',
+                                            }}
+                                            labelStyle={{ fontWeight: 'bold', color: palette.dark, fontSize: '1em' }}
+                                            itemStyle={{ color: palette.text, fontSize: '0.9em' }}
+                                            formatter={(value) => [`${value.toFixed(2)}`, 'Score Moyen']}
+                                        />
+                                        <Bar
+                                            dataKey="averageScore"
+                                            fill={(entry, index) => COLORS_BAR[index % COLORS_BAR.length]}
+                                            name="Score Moyen"
+                                            isAnimationActive={true}
+                                            animationDuration={1000}
+                                            animationEasing="ease-out"
+                                            radius={[8, 8, 0, 0]}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </ChartCard>
+                        </Grid>
+                    )}
+                </Grid>
+            </Box>
         </div>
     );
 }

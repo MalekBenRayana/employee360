@@ -69,4 +69,6 @@ export class Project {
 
   @OneToMany(() => EvaluationSession, (session) => session.project)
   evaluationSessions: EvaluationSession[];
+
+ 
 }

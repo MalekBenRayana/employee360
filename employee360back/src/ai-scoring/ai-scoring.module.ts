@@ -3,9 +3,7 @@ import { AiScoringService } from './ai-scoring.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule,
-  ],
+  imports: [ConfigModule],
   providers: [AiScoringService],
   exports: [AiScoringService],
 })

@@ -1,0 +1,370 @@
+/* General Layout Adjustments (ensure it plays well with your existing layout.css) */
+.ai-reports-container {
+    padding: 2rem;
+    max-width: 1200px; /* Limit width for better readability */
+    margin: 0 auto; /* Center the container */
+}
+
+.main-title {
+    font-size: 2.2rem;
+    color: #2c3e50; /* Darker, professional blue/grey */
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+/* Loading and Error States */
+.loading-spinner, .no-reports-message, .professional-alert {
+    text-align: center;
+    padding: 40px 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+}
+
+.loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #007bff; /* Primary brand color */
+}
+
+.professional-alert {
+    background-color: #e9f7ef; /* Light green for success/info alerts */
+    border-color: #d4edda;
+    color: #155724;
+}
+
+.professional-alert.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* --- Reports List View --- */
+.reports-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 10px 0;
+}
+
+.report-summary-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+    display: flex;
+    align-items: flex-start;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+}
+
+.report-summary-card.interactive-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon-container {
+    margin-right: 20px;
+    padding: 10px;
+    background-color: #eef7ff; /* Light blue background for icon */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.report-summary-card h4 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.report-summary-card .summary-text {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.report-summary-card .average-score-preview {
+    font-size: 0.9rem;
+    color: #007bff;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.report-summary-card .view-details-button {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.report-summary-card .view-details-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* --- Report Detail View --- */
+.report-detail-view {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+}
+
+.back-button {
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #6c757d;
+    border-color: #6c757d;
+    transition: all 0.2s ease-in-out;
+}
+
+.back-button:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.report-header-summary {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 25px;
+    border-bottom: 2px dashed #e9ecef;
+}
+
+.report-header-summary .report-main-icon {
+    font-size: 4rem;
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+.report-header-summary h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.report-header-summary .overall-score-display {
+    font-size: 1.2rem;
+    color: #28a745;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.report-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.report-sections-grid .full-width-card {
+    grid-column: 1 / -1; /* Make these cards span full width */
+}
+
+.report-section-card {
+    background: #fdfdfd;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 25px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.report-section-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-color: #cce5ff; /* Light blue border on hover */
+}
+
+.report-section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.report-section-header .section-icon {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 123, 255, 0.1); /* Default light blue background for icons */
+}
+
+.report-section-card.full-width-card .section-icon {
+    background-color: rgba(111, 66, 193, 0.1); /* Different bg for full-width cards */
+}
+
+/* Specific icon backgrounds */
+.report-section-card:nth-child(1) .section-icon { background-color: rgba(52, 152, 219, 0.1); } /* Blue for Résumé Général */
+.report-section-card:nth-child(2) .section-icon { background-color: rgba(40, 167, 69, 0.1); } /* Green for Points Forts */
+.report-section-card:nth-child(3) .section-icon { background-color: rgba(220, 53, 69, 0.1); } /* Red for Axes d'Amélioration */
+.report-section-card:nth-child(4) .section-icon { background-color: rgba(255, 193, 7, 0.1); } /* Yellow for Recommandations Spécifiques */
+.report-section-card:nth-child(5) .section-icon { background-color: rgba(111, 66, 193, 0.1); } /* Purple for Statistiques Clés */
+.report-section-card:nth-child(6) .section-icon { background-color: rgba(23, 162, 184, 0.1); } /* Teal for Feedback Détaillé */
+.report-section-card:nth-child(7) .section-icon { background-color: rgba(255, 193, 7, 0.1); } /* Yellow for Conclusion */
+
+
+.report-section-header .section-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+.section-content p, .section-content li {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.section-content ul {
+    padding-left: 25px;
+    margin-bottom: 0;
+}
+
+.section-content li {
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+
+.section-content li::before {
+    content: '•'; /* Bullet point */
+    color: #007bff; /* Primary color bullet */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+/* Performance Statistics Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    background-color: #e9f7fe; /* Light blue for stat items */
+    border: 1px solid #cfe2ff;
+    border-left: 5px solid #007bff; /* Stronger accent */
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.stat-item strong {
+    color: #0056b3;
+}
+
+/* Raw Feedback by Question Styling */
+.raw-feedback-list {
+    margin-top: 15px;
+}
+
+.raw-feedback-item {
+    background-color: #f7f7f7;
+    border: 1px solid #e9e9e9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.raw-feedback-item strong {
+    color: #495057;
+    font-size: 1.05rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.raw-feedback-item p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ai-reports-container {
+        padding: 1rem;
+    }
+
+    .main-title {
+        font-size: 1.8rem;
+        justify-content: center; /* Center title on small screens */
+    }
+
+    .reports-list-grid {
+        grid-template-columns: 1fr; /* Stack cards on small screens */
+    }
+
+    .report-summary-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-icon-container {
+        margin: 0 0 15px 0;
+    }
+
+    .report-detail-view {
+        padding: 20px;
+    }
+
+    .report-header-summary h2 {
+        font-size: 1.6rem;
+    }
+
+    .report-sections-grid {
+        grid-template-columns: 1fr; /* Stack detail cards on small screens */
+    }
+
+    .report-section-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .report-section-header .section-icon {
+        margin: 0 0 10px 0;
+    }
+
+    .section-content ul {
+        padding-left: 20px;
+    }
+}

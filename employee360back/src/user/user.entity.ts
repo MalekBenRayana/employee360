@@ -112,4 +112,6 @@ export class User {
 
   @OneToMany(() => TimeTracking, (timeTracking) => timeTracking.user)
   timeTrackings: TimeTracking[];
+
+ 
 }

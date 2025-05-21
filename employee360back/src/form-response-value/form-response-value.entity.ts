@@ -28,7 +28,7 @@ export class FormResponseValue {
   fieldKey: string;
 
   @Column({ type: 'text', nullable: true })
-  fieldValue: string; // Stockera la réponse brute OU le score numérique de l'IA (stringifié)
+  fieldValue: string; 
 
   @OneToMany(
     () => PerformancePointChange,

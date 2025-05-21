@@ -1,124 +1,391 @@
+/* Variables CSS pour faciliter la gestion des couleurs */
+:root {
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-dark: #5a6268;
+    --success-color: #28a745;
+    --success-dark: #218838;
+    --light-grey: #f8f9fa;
+    --medium-grey: #e9ecef;
+    --dark-grey: #343a40;
+    --border-color: #e0e0e0;
+    --input-bg-color: #ffffff;
+    --box-shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --box-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
 
+/* Généralités du Modal */
+.create-project-modal-enhanced .modal-content {
+    border-radius: 12px;
+    box-shadow: var(--box-shadow-light);
+    overflow: hidden;
+    background-color: var(--light-grey);
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* En-tête du Modal */
 .create-project-modal-enhanced .modal-header-enhanced {
-    background-color: #007bff; /* Bleu primaire */
+    background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
-    border-bottom: 1px solid #0056b3;
+    border-bottom: none;
+    padding: 18px 25px; /* Réduit le padding du header */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Pseudo-éléments de design dans le header */
+.create-project-modal-enhanced .modal-header-enhanced::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: rotate(45deg);
+}
+
+.create-project-modal-enhanced .modal-header-enhanced::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: -10px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
 }
 
 .create-project-modal-enhanced .modal-title-enhanced {
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-size: 1.6rem; /* Réduit la taille du titre */
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+.create-project-modal-enhanced .modal-title-icon {
+    margin-right: 10px; /* Réduit la marge de l'icône du titre */
+    font-size: 1.5rem; /* Réduit la taille de l'icône du titre */
+}
+
+.create-project-modal-enhanced .btn-close {
+    filter: invert(1);
+    font-size: 1.1rem; /* Réduit la taille du bouton de fermeture */
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.create-project-modal-enhanced .btn-close:hover {
+    opacity: 1;
+}
+
+/* Corps du Modal */
 .create-project-modal-enhanced .modal-body-enhanced {
-    padding: 20px;
+    padding: 20px 25px; /* Réduit le padding du corps du modal */
+    background-color: var(--light-grey);
 }
 
+/* Groupes de Formulaire */
 .create-project-modal-enhanced .form-group-enhanced {
-    margin-bottom: 15px;
+    margin-bottom: 15px; /* Réduit la marge entre les groupes de formulaire */
 }
 
 .create-project-modal-enhanced .form-label-enhanced {
-    font-weight: bold;
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: 5px; /* Réduit la marge sous les labels */
+    display: block;
+    font-size: 0.9rem; /* Réduit la taille de police des labels */
+}
+
+/* Style des contrôles de formulaire (inputs, select, textarea) */
+.create-project-modal-enhanced .form-control-styled {
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px; /* Réduit le padding interne des inputs */
+    height: 38px; /* Réduit la hauteur fixe des inputs */
+    font-size: 0.95rem; /* Réduit la taille de police des inputs */
+    background-color: var(--input-bg-color);
     color: #333;
-    margin-bottom: 5px;
+    transition: all 0.2s ease-in-out;
 }
 
-.create-project-modal-enhanced .form-control-enhanced {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
+.create-project-modal-enhanced .form-control-styled:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.create-project-modal-enhanced .form-control-styled::placeholder {
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+/* Icônes dans les Inputs */
+.create-project-modal-enhanced .input-icon-left {
+    background-color: var(--medium-grey);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    color: var(--primary-color);
+    padding: 8px 12px; /* Réduit le padding de l'icône */
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; /* Réduit la largeur de l'icône, correspond à la hauteur de l'input */
+    min-width: 38px;
+    height: 38px; /* Réduit la hauteur de l'icône, correspond à la hauteur de l'input */
+    box-sizing: border-box;
+}
+
+.create-project-modal-enhanced .input-icon-left svg {
+    font-size: 1rem; /* Réduit la taille de l'icône */
+    vertical-align: middle;
+}
+
+.create-project-modal-enhanced .input-icon-textarea-top {
+    align-self: flex-start;
+    padding-top: 8px; /* Ajuste le padding pour le textarea */
+    height: auto;
+    min-height: 38px; /* Aligne avec la hauteur des inputs */
+}
+
+.create-project-modal-enhanced .input-icon-textarea-top svg {
     font-size: 1rem;
 }
 
-.create-project-modal-enhanced .form-control-enhanced:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.create-project-modal-enhanced .form-select-enhanced {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 8px 10px;
-    padding-right: 2.25rem;
-}
-
-.create-project-modal-enhanced .form-textarea-enhanced {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-}
-
-.create-project-modal-enhanced .form-textarea-enhanced:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.create-project-modal-enhanced .react-select-container-enhanced > div {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-}
-
-.create-project-modal-enhanced .react-select-container-enhanced:focus-within > div {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.create-project-modal-enhanced .react-select-enhanced__control {
-    border: none !important;
+/* Styles pour React-Select */
+.create-project-modal-enhanced .react-select-container-styled .react-select-styled__control {
+    border: 1px solid var(--border-color) !important;
+    border-left: none !important;
     box-shadow: none !important;
-    padding: 0 !important;
+    border-radius: 0 8px 8px 0 !important;
+    min-height: 38px !important; /* Correspond à la nouvelle hauteur des inputs */
+    background-color: var(--input-bg-color) !important;
+    transition: all 0.2s ease-in-out;
 }
 
-.create-project-modal-enhanced .react-select-enhanced__value-container {
-    padding: 0.375rem 0.75rem;
+.create-project-modal-enhanced .react-select-container-styled .react-select-styled__control--is-focused {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2) !important;
 }
 
-.create-project-modal-enhanced .react-select-enhanced__indicators {
-    padding-right: 0.75rem;
+.create-project-modal-enhanced .react-select-container-styled .react-select-styled__value-container {
+    padding-left: 0.4rem; /* Ajuste le padding si nécessaire */
+    padding-top: 0.25rem; /* Ajuste le padding pour rendre plus compact */
+    padding-bottom: 0.25rem;
 }
 
+.create-project-modal-enhanced .react-select-styled__menu {
+    border-radius: 8px;
+    box-shadow: var(--box-shadow-light);
+    overflow: hidden;
+}
+
+.create-project-modal-enhanced .react-select-styled__option { /* Nouveau style pour les options */
+    font-size: 0.95rem; /* Réduit la taille de la police des options */
+    padding: 8px 12px; /* Réduit le padding des options */
+}
+
+.create-project-modal-enhanced .react-select-styled__option--is-selected {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.create-project-modal-enhanced .react-select-styled__option--is-focused {
+    background-color: var(--medium-grey) !important;
+    color: var(--dark-grey) !important;
+}
+
+/* Section d'assignation des rôles */
+.create-project-modal-enhanced .section-card {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px; /* Réduit le padding de la carte de section */
+    margin-top: 20px; /* Réduit l'espace au-dessus de la section */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* Ombre subtile réduite */
+}
+
+.create-project-modal-enhanced .section-title {
+    font-size: 1.2rem; /* Réduit la taille du titre de section */
+    color: var(--primary-color);
+    margin-bottom: 15px; /* Réduit la marge sous le titre de section */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px; /* Réduit le padding sous la ligne */
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.create-project-modal-enhanced .section-title-icon {
+    margin-right: 8px; /* Réduit la marge de l'icône du titre de section */
+    font-size: 1.1rem; /* Réduit la taille de l'icône */
+    color: var(--primary-color);
+}
+
+.create-project-modal-enhanced .roles-assignment-list {
+    max-height: 200px; /* Réduit la hauteur maximale de la liste des rôles */
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.create-project-modal-enhanced .role-assignment-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px; /* Réduit la marge entre les éléments de rôle */
+    padding-bottom: 10px; /* Réduit le padding */
+    border-bottom: 1px dashed var(--medium-grey);
+}
+
+.create-project-modal-enhanced .role-assignment-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.create-project-modal-enhanced .user-role-label {
+    font-size: 0.85rem; /* Réduit la taille de police du label utilisateur/rôle */
+    color: var(--dark-grey);
+    font-weight: 500;
+    margin-bottom: 4px; /* Réduit la marge */
+}
+
+/* Pied de page du Modal */
 .create-project-modal-enhanced .modal-footer-enhanced {
-    border-top: 1px solid #dee2e6;
-    padding: 15px;
+    border-top: 1px solid var(--medium-grey);
+    padding: 15px 25px; /* Réduit le padding du footer */
+    background-color: var(--light-grey);
     display: flex;
     justify-content: flex-end;
+    gap: 10px; /* Réduit l'espace entre les boutons */
 }
 
-.create-project-modal-enhanced .button-secondary-enhanced {
-    background-color: #6c757d;
+/* Boutons */
+.button-base {
+    padding: 8px 20px; /* Réduit le padding des boutons */
+    font-size: 0.95rem; /* Réduit la taille de police des boutons */
+    font-weight: 600;
+    border-radius: 25px; /* Ajuste le rayon de la bordure des boutons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.2px;
+}
+
+.button-icon {
+    margin-right: 8px; /* Réduit la marge de l'icône du bouton */
+    font-size: 1rem; /* Réduit la taille de l'icône du bouton */
+}
+
+.button-cancel {
+    /* @extend .button-base; - Si vous utilisez un préprocesseur */
+    background-color: var(--secondary-color);
     color: white;
-    border: 1px solid #6c757d;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    border: none;
 }
 
-.create-project-modal-enhanced .button-secondary-enhanced:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
+.button-cancel:hover {
+    background-color: var(--secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-.create-project-modal-enhanced .button-primary-enhanced {
-    background-color: #007bff;
+.button-primary {
+    /* @extend .button-base; - Si vous utilisez un préprocesseur */
+    background-color: var(--success-color);
     color: white;
-    border: 1px solid #007bff;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-    margin-left: 10px;
+    border: none;
 }
 
-.create-project-modal-enhanced .button-primary-enhanced:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.button-primary:hover {
+    background-color: var(--success-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsivité */
+@media (max-width: 768px) {
+    .create-project-modal-enhanced .modal-header-enhanced,
+    .create-project-modal-enhanced .modal-body-enhanced,
+    .create-project-modal-enhanced .modal-footer-enhanced {
+        padding: 12px 15px;
+    }
+
+    .create-project-modal-enhanced .modal-title-enhanced { font-size: 1.4rem; }
+    .create-project-modal-enhanced .modal-title-icon { font-size: 1.2rem; margin-right: 6px; }
+
+    .create-project-modal-enhanced .form-control-styled, .button-base {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        height: 35px;
+    }
+
+    .create-project-modal-enhanced .input-icon-left {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        width: 35px;
+        min-width: 35px;
+        height: 35px;
+    }
+    .create-project-modal-enhanced .input-icon-left svg { font-size: 0.9rem; }
+
+    .create-project-modal-enhanced .input-icon-textarea-top {
+        padding-top: 6px;
+        min-height: 35px;
+    }
+    .create-project-modal-enhanced .input-icon-textarea-top svg { font-size: 0.9rem; }
+
+
+    .create-project-modal-enhanced .modal-footer-enhanced { flex-direction: column; gap: 8px; }
+    .button-cancel, .button-primary {
+        width: 100%;
+        margin-left: 0 !important;
+        border-radius: 6px;
+    }
+
+    .create-project-modal-enhanced .section-card {
+        padding: 15px;
+        margin-top: 15px; /* Réduit l'espace sur mobile */
+    }
+
+    .create-project-modal-enhanced .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+    }
+
+    .create-project-modal-enhanced .section-title-icon {
+        font-size: 1rem;
+        margin-right: 6px;
+    }
+
+    .create-project-modal-enhanced .roles-assignment-list {
+        max-height: 150px; /* Réduit encore la hauteur sur mobile */
+    }
+
+    .create-project-modal-enhanced .role-assignment-item {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+    }
+
+    .create-project-modal-enhanced .user-role-label {
+        font-size: 0.8rem;
+    }
 }

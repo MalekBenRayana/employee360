@@ -1,3 +1,4 @@
+// src/ai-scoring/ai-scoring.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ConfigService } from '@nestjs/config';

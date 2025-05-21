@@ -1,0 +1,53 @@
+/* assets/styles/animations.css */
+
+/* Base styles for animated sections */
+.animated-section {
+    opacity: 0;
+    transform: translateY(20px); /* Default slide-up effect */
+    will-change: opacity, transform; /* Optimize performance */
+}
+
+/* Specific animations */
+.animated-section.fade-in {
+    animation: fadeIn forwards;
+}
+
+.animated-section.fade-in-up {
+    animation: fadeInUp forwards;
+}
+
+.animated-section.slide-in-left {
+    transform: translateX(-50px);
+    animation: slideInLeft forwards;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Global fade-in for header */
+@keyframes animateFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: animateFadeIn 0.8s ease-out forwards;
+    opacity: 0; /* Initial state */
+}
+
+.animate-fade-in.animation-delay-1 {
+    animation-delay: 0.2s;
+}

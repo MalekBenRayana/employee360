@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { Modal, Button, Form, Alert, InputGroup } from 'react-bootstrap'; // Import de InputGroup
 import axios from 'axios';
-import '../../assets/styles/InviteModal.css'
+import { FaUserPlus, FaEnvelope, FaUser, FaUserTag, FaTimesCircle, FaCheckCircle } from 'react-icons/fa'; // Import des icônes
+import '../../assets/styles/InviteModal.css';
 
 const InviteModal = ({ showModal, setShowModal, fetchUsers }) => {
     const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ const InviteModal = ({ showModal, setShowModal, fetchUsers }) => {
 
     const handleAddUser = async () => {
         if (!email || !username || !roleId) {
-            setErrorMessage("Veuillez entrer tous les champs.");
+            setErrorMessage("Veuillez remplir tous les champs.");
             return;
         }
 
@@ -38,89 +39,101 @@ const InviteModal = ({ showModal, setShowModal, fetchUsers }) => {
             const response = await axios.post('http://localhost:3000/users/create-temporary', {
                 email: email,
                 username: username,
-                roleId: roleId,
+                roleId: parseInt(roleId, 10), // Assurez-vous que roleId est un entier
             });
 
-            if (response.data) {
+            if (response.status === 201) { // Vérifiez le statut de succès attendu
                 setShowModal(false);
                 setEmail('');
                 setUsername('');
                 setRoleId('');
-                fetchUsers();
+                fetchUsers(); // Actualise la liste des utilisateurs
             }
         } catch (error) {
-            setErrorMessage("Erreur lors de l'ajout de l'utilisateur.");
             console.error("Erreur lors de l'ajout de l'utilisateur:", error);
+            if (error.response && error.response.data && error.response.data.message) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Erreur lors de l'ajout de l'utilisateur. Veuillez réessayer.");
+            }
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered className="invite-modal-enhanced">
             <Modal.Header closeButton className="modal-header-enhanced">
-                <Modal.Title className="modal-title-enhanced">Inviter un nouvel utilisateur</Modal.Title>
+                <Modal.Title className="modal-title-enhanced">
+                    <FaUserPlus className="modal-title-icon" /> Inviter un Nouvel Utilisateur
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-enhanced">
                 {errorMessage && <Alert variant="danger" className="alert-enhanced">{errorMessage}</Alert>}
                 <Form>
                     <Form.Group controlId="formEmail" className="form-group-enhanced">
                         <Form.Label className="form-label-enhanced">Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            placeholder="Entrez l'adresse email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            isInvalid={!!errorMessage && !email}
-                            className="form-control-enhanced"
-                        />
-                        <Form.Control.Feedback type="invalid" className="feedback-enhanced">Veuillez entrer un email valide.</Form.Control.Feedback>
+                        <InputGroup>
+                            <InputGroup.Text className="input-icon-left"><FaEnvelope /></InputGroup.Text>
+                            <Form.Control
+                                type="email"
+                                placeholder="Entrez l'adresse email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="form-control-styled"
+                            />
+                        </InputGroup>
                     </Form.Group>
 
                     <Form.Group controlId="formUsername" className="form-group-enhanced">
                         <Form.Label className="form-label-enhanced">Nom d'utilisateur</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Entrez le nom d'utilisateur"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            isInvalid={!!errorMessage && !username}
-                            className="form-control-enhanced"
-                        />
-                        <Form.Control.Feedback type="invalid" className="feedback-enhanced">Veuillez entrer un nom d'utilisateur.</Form.Control.Feedback>
+                        <InputGroup>
+                            <InputGroup.Text className="input-icon-left"><FaUser /></InputGroup.Text>
+                            <Form.Control
+                                type="text"
+                                placeholder="Entrez le nom d'utilisateur"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                className="form-control-styled"
+                            />
+                        </InputGroup>
                     </Form.Group>
 
                     <Form.Group controlId="formRole" className="form-group-enhanced">
                         <Form.Label className="form-label-enhanced">Rôle</Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={roleId}
-                            onChange={(e) => setRoleId(e.target.value)}
-                            isInvalid={!!errorMessage && !roleId}
-                            className="form-control-enhanced form-select-enhanced"
-                        >
-                            <option value="">Sélectionnez un rôle</option>
-                            {roles.map((role) => (
-                                <option key={role.id} value={role.id}>
-                                    {role.id} - {role.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid" className="feedback-enhanced">Veuillez sélectionner un rôle.</Form.Control.Feedback>
+                        <InputGroup>
+                            <InputGroup.Text className="input-icon-left"><FaUserTag /></InputGroup.Text>
+                            <Form.Control
+                                as="select"
+                                value={roleId}
+                                onChange={(e) => setRoleId(e.target.value)}
+                                required
+                                className="form-control-styled"
+                            >
+                                <option value="">Sélectionnez un rôle</option>
+                                {roles.map((role) => (
+                                    <option key={role.id} value={role.id}>
+                                        {role.name}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </InputGroup>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer className="modal-footer-enhanced">
-                <Button variant="secondary" onClick={() => setShowModal(false)} className="button-secondary-enhanced">
-                    Annuler
+                <Button variant="secondary" onClick={() => setShowModal(false)} className="button-cancel">
+                    <FaTimesCircle className="button-icon" /> Annuler
                 </Button>
                 <Button
                     variant="primary"
                     onClick={handleAddUser}
                     disabled={!email || !username || !roleId || isSubmitting}
-                    className={`button-primary-enhanced ${isSubmitting ? 'button-disabled-enhanced' : ''}`}
+                    className={`button-primary ${isSubmitting ? 'button-disabled' : ''}`}
                 >
-                    {isSubmitting ? 'Ajout en cours...' : 'Ajouter'}
+                    {isSubmitting ? 'Ajout en cours...' : (<><FaCheckCircle className="button-icon" /> Ajouter</>)}
                 </Button>
             </Modal.Footer>
         </Modal>

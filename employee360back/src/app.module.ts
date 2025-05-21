@@ -28,6 +28,7 @@ import { TimeTrackingModule } from './time-tracking/time-tracking.module';
 import { TaskEstimationModule } from './tasks-estimations/tasks-estimations.module';
 import { AiScoringModule } from './ai-scoring/ai-scoring.module';
 import { AiEvaluationReportModule } from './ai-evaluation-report/ai-evaluation-report.module';
+import { TeamAiReportModule } from './team-ai-report/team-ai-report.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { AiEvaluationReportModule } from './ai-evaluation-report/ai-evaluation-r
     TaskEstimationModule,
     AiScoringModule,
     AiEvaluationReportModule,
+    TeamAiReportModule,
   ],
 })
 export class AppModule {}

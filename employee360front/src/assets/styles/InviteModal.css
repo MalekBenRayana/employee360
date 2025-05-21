@@ -1,103 +1,243 @@
-/* src/components/InviteModal.css (ou le nom de votre fichier CSS) */
+/* src/components/InviteModal.css */
+:root {
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-dark: #5a6268;
+    --success-color: #28a745;
+    --success-dark: #218838;
+    --light-grey: #f8f9fa;
+    --medium-grey: #e9ecef;
+    --dark-grey: #343a40;
+    --border-color: #e0e0e0;
+    --input-bg-color: #ffffff;
+    --box-shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --box-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
 
-.modal-header-enhanced {
-    background-color: #007bff; /* Couleur primaire */
+.invite-modal-enhanced .modal-content {
+    border-radius: 12px;
+    box-shadow: var(--box-shadow-light);
+    overflow: hidden;
+    background-color: var(--light-grey);
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.invite-modal-enhanced .modal-header-enhanced {
+    background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
-    border-bottom: 1px solid #0056b3;
+    border-bottom: none;
+    padding: 18px 25px; /* Réduit le padding du header */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
 }
 
-.modal-title-enhanced {
-    font-size: 1.5rem;
-    font-weight: 500;
+.invite-modal-enhanced .modal-header-enhanced::before,
+.invite-modal-enhanced .modal-header-enhanced::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
 }
 
-.modal-body-enhanced {
-    padding: 20px;
+.invite-modal-enhanced .modal-header-enhanced::before {
+    top: -20px; right: -20px; width: 80px; height: 80px; transform: rotate(45deg);
 }
 
-.alert-enhanced {
-    margin-bottom: 15px;
-    border-radius: 5px;
+.invite-modal-enhanced .modal-header-enhanced::after {
+    bottom: -10px; left: -10px; width: 50px; height: 50px;
 }
 
-.form-group-enhanced {
-    margin-bottom: 15px;
+.invite-modal-enhanced .modal-title-enhanced {
+    font-size: 1.6rem; /* Réduit la taille du titre */
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.form-label-enhanced {
-    font-weight: bold;
+.invite-modal-enhanced .modal-title-icon {
+    margin-right: 10px; /* Réduit la marge de l'icône du titre */
+    font-size: 1.5rem; /* Réduit la taille de l'icône du titre */
+}
+
+.invite-modal-enhanced .btn-close {
+    filter: invert(1);
+    font-size: 1.1rem; /* Réduit la taille du bouton de fermeture */
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.invite-modal-enhanced .btn-close:hover { opacity: 1; }
+
+.invite-modal-enhanced .modal-body-enhanced {
+    padding: 20px 25px; /* Réduit le padding du corps du modal */
+    background-color: var(--light-grey);
+}
+
+.invite-modal-enhanced .alert-enhanced {
+    margin-bottom: 15px; /* Réduit la marge sous l'alerte */
+    border-radius: 8px;
+    padding: 12px 18px; /* Réduit le padding de l'alerte */
+    font-size: 0.95rem; /* Réduit la taille de police de l'alerte */
+    line-height: 1.4;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.invite-modal-enhanced .form-group-enhanced {
+    margin-bottom: 15px; /* Réduit la marge entre les groupes de formulaire */
+}
+
+.invite-modal-enhanced .form-label-enhanced {
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: 5px; /* Réduit la marge sous les labels */
+    display: block;
+    font-size: 0.9rem; /* Réduit la taille de police des labels */
+}
+
+.invite-modal-enhanced .form-control-styled {
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px; /* Réduit le padding interne des inputs */
+    height: 38px; /* Réduit la hauteur fixe des inputs */
+    font-size: 0.95rem; /* Réduit la taille de police des inputs */
+    background-color: var(--input-bg-color);
     color: #333;
-    margin-bottom: 5px;
+    transition: all 0.2s ease-in-out;
 }
 
-.form-control-enhanced {
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 1rem;
+.invite-modal-enhanced .form-control-styled:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
+    outline: none;
 }
 
-.form-control-enhanced:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.invite-modal-enhanced .form-control-styled::placeholder {
+    color: #a0a0a0;
+    font-style: italic;
 }
 
-.form-select-enhanced {
-    appearance: none; /* Supprime les flèches par défaut */
-    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg fill%3D%22%23343a40%22 viewBox%3D%220 0 4 5%22%3E%3Cpath fill-rule%3D%22evenodd%22 d%3D%22M2 0L0 2h4L2 0z%22/%3E%3C/svg%3E');
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 8px 10px;
-    padding-right: 2.25rem;
+.invite-modal-enhanced .input-icon-left {
+    background-color: var(--medium-grey);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    color: var(--primary-color);
+    padding: 8px 12px; /* Réduit le padding de l'icône */
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; /* Réduit la largeur de l'icône, correspond à la hauteur de l'input */
+    min-width: 38px;
+    height: 38px; /* Réduit la hauteur de l'icône, correspond à la hauteur de l'input */
+    box-sizing: border-box;
 }
 
-.feedback-enhanced {
-    color: #dc3545;
-    font-size: 0.9rem;
-    margin-top: 5px;
+.invite-modal-enhanced .input-icon-left svg {
+    font-size: 1rem; /* Réduit la taille de l'icône */
+    vertical-align: middle;
 }
 
-.modal-footer-enhanced {
-    border-top: 1px solid #dee2e6;
-    padding: 15px;
+.invite-modal-enhanced .modal-footer-enhanced {
+    border-top: 1px solid var(--medium-grey);
+    padding: 15px 25px; /* Réduit le padding du footer */
+    background-color: var(--light-grey);
     display: flex;
     justify-content: flex-end;
+    gap: 10px; /* Réduit l'espace entre les boutons */
 }
 
-.button-secondary-enhanced {
-    background-color: #6c757d;
+.button-base {
+    padding: 8px 20px; /* Réduit le padding des boutons */
+    font-size: 0.95rem; /* Réduit la taille de police des boutons */
+    font-weight: 600;
+    border-radius: 25px; /* Ajuste le rayon de la bordure des boutons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); /* Réduit l'ombre des boutons */
+    letter-spacing: 0.2px; /* Ajuste l'espacement des lettres */
+}
+
+.button-icon {
+    margin-right: 8px; /* Réduit la marge de l'icône du bouton */
+    font-size: 1rem; /* Réduit la taille de l'icône du bouton */
+}
+
+.button-cancel {
+    background-color: var(--secondary-color);
     color: white;
-    border: 1px solid #6c757d;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    border: none;
 }
 
-.button-secondary-enhanced:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
+.button-cancel:hover {
+    background-color: var(--secondary-dark);
+    transform: translateY(-2px); /* Effet de soulèvement réduit */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Ombre au survol réduite */
 }
 
-.button-primary-enhanced {
-    background-color: #007bff;
+.button-primary {
+    background-color: var(--success-color);
     color: white;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    margin-left: 10px;
+    border: none;
 }
 
-.button-primary-enhanced:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.button-primary:hover {
+    background-color: var(--success-dark);
+    transform: translateY(-2px); /* Effet de soulèvement réduit */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Ombre au survol réduite */
 }
 
-.button-disabled-enhanced {
+.button-disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background-color: var(--primary-color) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+@media (max-width: 768px) {
+    .invite-modal-enhanced .modal-header-enhanced,
+    .invite-modal-enhanced .modal-body-enhanced,
+    .invite-modal-enhanced .modal-footer-enhanced {
+        padding: 12px 15px; /* Encore plus réduit sur mobile */
+    }
+
+    .invite-modal-enhanced .modal-title-enhanced { font-size: 1.4rem; }
+    .invite-modal-enhanced .modal-title-icon { font-size: 1.2rem; margin-right: 6px; }
+
+    .invite-modal-enhanced .form-control-styled, .button-base {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        height: 35px; /* Hauteur des inputs sur mobile */
+    }
+
+    .invite-modal-enhanced .input-icon-left {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        width: 35px;
+        min-width: 35px;
+        height: 35px;
+    }
+    .invite-modal-enhanced .input-icon-left svg { font-size: 0.9rem; }
+
+    .invite-modal-enhanced .modal-footer-enhanced { flex-direction: column; gap: 8px; }
+    .button-cancel, .button-primary {
+        width: 100%;
+        margin-left: 0 !important;
+        border-radius: 6px;
+    }
 }
